@@ -45,6 +45,19 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 
+    
+const saoPauloPhoto = 'WhatsApp%20Image%202026-10-15%20at%2018.39.37%20(1).jpeg';
+
+L.marker([-23.5505, -46.6333])
+  .addTo(map)
+  .bindPopup(`
+    <div style="max-width:260px">
+      <h3>São Paulo, Brazil</h3>
+      <img src="${saoPauloPhoto}" alt="São Paulo" style="width:100%;border-radius:8px">
+      <p>Our South American adventure began in São Paulo — the first stop on a trip full of unforgettable places and memories.</p>
+    </div>
+  `);
+
     const picker = document.createElement('input');
     picker.type = 'file';
     picker.accept = '.json,application/json';
