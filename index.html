@@ -60,12 +60,17 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         if (!file) return;
 
         const data = JSON.parse(await file.text());
-        const points = (data.locations || []).filter(p =>
-          Number.isFinite(p.lat) &&
-          Number.isFinite(p.lon) &&
-          p.lat >= -57 && p.lat <= 13 &&
-          p.lon >= -82 && p.lon <= -34
-        );
+  
+const points = (data.locations || [])
+  .filter(p =>
+    Number.isFinite(p.lat) &&
+    Number.isFinite(p.lon) &&
+    Number.isFinite(p.time) &&
+    p.lat >= -57 && p.lat <= 13 &&
+    p.lon >= -82 && p.lon <= -34
+  )
+  .sort((a, b) => a.time - b.time);
+
 
         if (points.length < 2) {
           status.textContent =
