@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Our South American Journey</title>
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #25352d;
+      background: #f7f5ef;
+    }
+    header {
+      padding: 24px;
+      text-align: center;
+    }
+    h1 { margin-bottom: 8px; }
+    #map { height: 75vh; min-height: 450px; }
+    #status { padding: 16px; text-align: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Our South American Journey</h1>
+    <p>Brazil · Argentina · Chile · Peru</p>
+  </header>
+
+  <div id="map"></div>
+  <div id="status">Load your Polarsteps JSON to display the route.</div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([-20, -60], 3);
+
+   
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors',
+  maxZoom: 19,
+  crossOrigin: true
+}).addTo(map);
+
+
+    const picker = document.createElement('input');
+    picker.type = 'file';
+    picker.accept = '.json,application/json';
+    picker.style.display = 'block';
+    picker.style.margin = '0 auto 20px';
+    document.querySelector('header').appendChild(picker);
+
+    picker.addEventListener('change', async () => {
+      const status = document.getElementById('status');
+
+      try {
+        const file = picker.files[0];
+        if (!file) return;
+
+        const data = JSON.parse(await file.text());
+        const points = (data.locations || []).filter(p =>
+          Number.isFinite(p.lat) &&
+          Number.isFinite(p.lon) &&
+          p.lat >= -57 && p.lat <= 13 &&
+          p.lon >= -82 && p.lon <= -34
+        );
+
+        if (points.length < 2) {
+          status.textContent =
+            'No South American route points found in this file.';
+          return;
+        }
+
+        const route = L.polyline(
+          points.map(p => [p.lat, p.lon]),
+          { color: '#26785c', weight: 3 }
+        ).addTo(map);
+
+        L.marker([points[0].lat, points[0].lon])
+          .addTo(map).bindPopup('First recorded point');
+
+        L.marker([
+          points[points.length - 1].lat,
+          points[points.length - 1].lon
+        ]).addTo(map).bindPopup('Last recorded point');
+
+        map.fitBounds(route.getBounds(), { padding: [25, 25] });
+        status.textContent =
+          `South American route loaded: ${points.length} GPS points.`;
+      } catch (error) {
+        status.textContent =
+          'Could not read this JSON. Check that it is a valid Polarsteps export.';
+      }
+    });
+  </script>
+</body>
+</html>
