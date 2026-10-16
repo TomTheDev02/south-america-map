@@ -1,156 +1,542 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Our South American Journey</title>
+  <title>A Brief History of Everything & Everywhere</title>
   <link rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Georgia, 'Times New Roman', serif;
       color: #25352d;
-      background: #f7f5ef;
+      background: #f3eee2;
     }
-    header {
+
+    button, input { font: inherit; }
+
+    button { cursor: pointer; }
+
+    #cover {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 24px;
+      background:
+        radial-gradient(ellipse at center, #647c60 0%, #263f35 70%);
+    }
+
+    .book {
+      width: 100%;
+      max-width: 680px;
+      padding: 16px;
+      border-radius: 7px 18px 18px 7px;
+      background: #d3b981;
+      box-shadow: 12px 18px 35px #101d18aa;
+    }
+
+    .book-inner {
+      min-height: 520px;
+      padding: 48px 25px;
+      text-align: center;
+      color: #f8edce;
+      border: 2px solid #d3b981;
+      outline: 1px solid #d3b981;
+      outline-offset: -10px;
+      background:
+        linear-gradient(#1b392be8, #1b392be8),
+        repeating-linear-gradient(
+          45deg, #34513d, #34513d 10px, #294331 10px, #294331 20px
+        );
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cover-kicker {
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .book h1 {
+      font-size: clamp(34px, 7vw, 58px);
+      line-height: 1.08;
+      font-weight: normal;
+      margin: 24px 0;
+    }
+
+    .cover-line {
+      width: 100px;
+      height: 1px;
+      background: #d3b981;
+      margin: 8px auto 24px;
+    }
+
+    .cover-description {
+      max-width: 390px;
+      line-height: 1.8;
+      font-size: 17px;
+    }
+
+    .primary-button {
+      margin-top: 22px;
+      padding: 14px 24px;
+      border: 1px solid #f5e4b7;
+      border-radius: 3px;
+      color: #243c2d;
+      background: #f5e4b7;
+      font-weight: bold;
+    }
+
+    .primary-button:hover {
+      background: white;
+      transform: translateY(-1px);
+    }
+
+    #journey { display: none; }
+
+    header {
+      padding: 22px 16px 14px;
       text-align: center;
     }
-    h1 { margin-bottom: 8px; }
-    #map { height: 75vh; min-height: 450px; }
-    #status { padding: 16px; text-align: center; }
+
+    header h1 {
+      font-size: clamp(25px, 4vw, 38px);
+      margin: 0 0 8px;
+    }
+
+    header p { margin: 0; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 14px;
+      padding: 0 14px 14px;
+    }
+
+    #chapters {
+      padding: 16px;
+      border: 1px solid #d9cfba;
+      border-radius: 8px;
+      background: #fffdf7;
+      align-self: start;
+    }
+
+    #chapters h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    .chapter-button {
+      display: block;
+      width: 100%;
+      padding: 10px 8px;
+      margin: 5px 0;
+      text-align: left;
+      color: #284735;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 5px;
+    }
+
+    .chapter-button:hover,
+    .chapter-button.active {
+      background: #e7eddf;
+      border-color: #b9c9b1;
+    }
+
+    #map {
+      height: 72vh;
+      min-height: 440px;
+      border: 1px solid #d9cfba;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #status {
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .map-label {
+      background: #24543b;
+      color: white;
+      border: 2px solid #fff8e9;
+      border-radius: 7px;
+      padding: 8px 10px;
+      box-shadow: 0 2px 8px #0005;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .map-label.current {
+      background: #a15c2a;
+      border-color: #fff;
+      box-shadow: 0 0 0 3px #a15c2a55, 0 2px 8px #0005;
+    }
+
+    .chapter-popup { width: 300px; max-width: 72vw; }
+
+    .chapter-popup h2 {
+      font-family: Georgia, serif;
+      font-size: 23px;
+      margin: 4px 0 8px;
+    }
+
+    .chapter-popup p {
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .photo-grid img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 5px;
+      display: block;
+    }
+
+    .next-button {
+      width: 100%;
+      padding: 11px;
+      margin-top: 12px;
+      background: #24543b;
+      color: white;
+      border: 0;
+      border-radius: 5px;
+    }
+
+    .next-button:hover { background: #173d29; }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 9px;
+    }
+
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; }
+      #chapters { order: 2; }
+      #map { height: 60vh; min-height: 380px; }
+      .chapter-button {
+        display: inline-block;
+        width: auto;
+        margin: 3px;
+        border-color: #e0d7c4;
+      }
+      .book-inner { min-height: 470px; }
+    }
   </style>
 </head>
-<body>
-  <header>
-    <h1>Our South American Journey</h1>
-    <p>Brazil · Argentina · Chile · Peru</p>
-  </header>
 
-  <div id="map"></div>
-  <div id="status">Load your Polarsteps JSON to display the route.</div>
+<body>
+  <section id="cover">
+    <div class="book">
+      <div class="book-inner">
+        <div class="cover-kicker">A travel journal</div>
+        <h1>A Brief History of<br>Everything<br>&amp; Everywhere</h1>
+        <div class="cover-line"></div>
+        <p class="cover-description">
+          Four friends, one continent, countless memories.
+          Follow our journey through South America, one place at a time.
+        </p>
+        <p>Brazil · Argentina · Chile · Peru</p>
+        <button class="primary-button" id="openBook">
+          Open our adventure →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <main id="journey">
+    <header>
+      <h1>A Brief History of Everything &amp; Everywhere</h1>
+      <p>Our South American adventure · 2026</p>
+    </header>
+
+    <div class="layout">
+      <aside id="chapters">
+        <h2>Chapters</h2>
+        <p style="font-size:14px;line-height:1.5">
+          Choose a destination to explore its place in our story.
+        </p>
+        <div id="chapterList"></div>
+        <hr style="border:0;border-top:1px solid #e0d7c4;margin:16px 0">
+        <strong style="font-size:14px">Add our travel route</strong>
+        <p style="font-size:13px;line-height:1.5">
+          Select your Polarsteps JSON export below to draw our route.
+        </p>
+        <input id="routeFile" type="file"
+          accept=".json,application/json" style="max-width:100%">
+        <p id="status">Choose a chapter to begin.</p>
+      </aside>
+
+      <div id="map"></div>
+    </div>
+  </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
+    const destinations = [
+      {
+        name: 'São Paulo',
+        country: 'Brazil',
+        coords: [-23.5505, -46.6333],
+        story: 'Our South American adventure began in São Paulo — the first stop on a trip full of unforgettable places and memories.'
+      },
+      {
+        name: 'Rio de Janeiro',
+        country: 'Brazil',
+        coords: [-22.9068, -43.1729],
+        story: 'Next came Rio de Janeiro: beaches, city life and the unmistakable scenery of Brazil.'
+      },
+      {
+        name: 'Porto Alegre',
+        country: 'Brazil',
+        coords: [-30.0346, -51.2177],
+        story: 'We travelled south to Porto Alegre before continuing our adventure through South America.'
+      },
+      {
+        name: 'Buenos Aires',
+        country: 'Argentina',
+        coords: [-34.6037, -58.3816],
+        story: 'Buenos Aires brought us into Argentina, with grand avenues, cafés and a distinctive city atmosphere.'
+      },
+      {
+        name: 'Salta',
+        country: 'Argentina',
+        coords: [-24.7821, -65.4232],
+        story: 'From Salta, we explored the dramatic landscapes of northern Argentina.'
+      },
+      {
+        name: 'Cafayate',
+        country: 'Argentina',
+        coords: [-26.0728, -65.9761],
+        story: 'Cafayate was a stop among the colourful valleys and spectacular scenery of the northwest.'
+      },
+      {
+        name: 'Cachi',
+        country: 'Argentina',
+        coords: [-25.1200, -66.1667],
+        story: 'We continued through the mountains to Cachi, a small town surrounded by striking Andean landscapes.'
+      },
+      {
+        name: 'Mendoza',
+        country: 'Argentina',
+        coords: [-32.8895, -68.8458],
+        story: 'Mendoza was our next Argentine stop, set against the Andes and famous for its wine country.'
+      },
+      {
+        name: 'Santiago',
+        country: 'Chile',
+        coords: [-33.4489, -70.6693],
+        story: 'We crossed into Chile and explored Santiago, a capital framed by the Andes.'
+      },
+      {
+        name: 'Lima',
+        country: 'Peru',
+        coords: [-12.0464, -77.0428],
+        story: 'In Peru, Lima was the gateway to the next part of our journey.'
+      },
+      {
+        name: 'Paracas',
+        country: 'Peru',
+        coords: [-13.8369, -76.2500],
+        story: 'We headed down the coast to Paracas, where the desert meets the Pacific.'
+      },
+      {
+        name: 'Huacachina',
+        country: 'Peru',
+        coords: [-14.0875, -75.7625],
+        story: 'Huacachina offered a desert oasis surrounded by enormous sand dunes.'
+      },
+      {
+        name: 'Arequipa',
+        country: 'Peru',
+        coords: [-16.4090, -71.5375],
+        story: 'Arequipa was another highlight on the way towards the Andes and Cusco.'
+      },
+      {
+        name: 'Cusco',
+        country: 'Peru',
+        coords: [-13.5320, -71.9675],
+        story: 'Cusco became our base for the next stage of the adventure in the Peruvian Andes.'
+      },
+      {
+        name: 'Machu Picchu',
+        country: 'Peru',
+        coords: [-13.1631, -72.5450],
+        story: 'After completing the Salkantay trek, we reached Machu Picchu — an unforgettable destination and a remarkable part of the journey.'
+      }
+    ];
+
+    const saoPauloPhotos = [
+      'WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg',
+      'WhatsApp Image 2026-10-15 at 18.39.37.jpeg'
+    ].map(filename => encodeURIComponent(filename));
+
     const map = L.map('map').setView([-20, -60], 3);
 
-   
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors',
-  maxZoom: 19,
-  crossOrigin: true
-}).addTo(map);
+    const markers = [];
+    let currentIndex = 0;
+    let routeLayer = null;
+    let startMarker = null;
+    let endMarker = null;
 
+    function makePopup(place, index) {
+      let gallery = '';
 
-    
+      if (index === 0) {
+        gallery = `
+          <div class="photo-grid">
+            ${saoPauloPhotos.map((src, i) => `
+              <a href="${src}" target="_blank" rel="noopener">
+                <img src="${src}" alt="São Paulo photo ${i + 1}">
+              </a>
+            `).join('')}
+          </div>
+          <p style="font-size:11px;color:#666">
+            Select a photo to open it full size.
+          </p>
+        `;
+      }
 
-const saoPauloPhotos = [
-  'WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg',
-  'WhatsApp Image 2026-10-15 at 18.39.37.jpeg'
-].map(filename => encodeURIComponent(filename));
+      const nextIndex = (index + 1) % destinations.length;
+      const nextName = destinations[nextIndex].name;
 
-const saoPauloIcon = L.divIcon({
-  className: '',
-  html: `
-    <div style="
-      background:#176b45;
-      color:white;
-      padding:9px 13px;
-      border:2px solid white;
-      border-radius:8px;
-      box-shadow:0 2px 8px #333;
-      font-size:14px;
-      font-weight:bold;
-      white-space:nowrap;
-    ">📍 SÃO PAULO</div>
-  `,
-  iconSize: [130, 38],
-  iconAnchor: [65, 19]
-});
+      return `
+        <div class="chapter-popup">
+          <h2>${place.name}</h2>
+          <div style="font-size:12px;color:#777">${place.country}</div>
+          <p>${place.story}</p>
+          ${gallery}
+          <button class="next-button"
+            onclick="openChapter(${nextIndex})">
+            Next chapter: ${nextName} →
+          </button>
+        </div>
+      `;
+    }
 
-const saoPauloGallery = saoPauloPhotos.map((src, i) => `
-  <a href="${src}" target="_blank" rel="noopener">
-    <img
-      src="${src}"
-      alt="São Paulo travel photo ${i + 1}"
-      style="
-        width:100%;
-        height:110px;
-        object-fit:cover;
-        border-radius:6px;
-        display:block;
-      "
-    >
-  </a>
-`).join('');
+    destinations.forEach((place, index) => {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="map-label" id="label-${index}">
+          ${index + 1}. ${place.name.toUpperCase()}
+        </div>`,
+        iconSize: [150, 38],
+        iconAnchor: [75, 19]
+      });
 
-L.marker([-23.5505, -46.6333], { icon: saoPauloIcon })
-  .addTo(map)
-  .bindPopup(`
-    <div style="width:320px;max-width:75vw;">
-      <h3 style="margin:4px 0 8px;">São Paulo, Brazil</h3>
-      <p style="margin:0 0 10px;">
-        Our South American adventure began in São Paulo — the first stop
-        on a trip full of unforgettable places and memories.
-      </p>
-      <div style="
-        display:grid;
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:7px;
-      ">
-        ${saoPauloGallery}
-      </div>
-      <p style="font-size:11px;color:#666;margin-bottom:0;">
-        Select a photo to open it full size.
-      </p>
-    </div>
-  `);
+      const marker = L.marker(place.coords, { icon })
+        .addTo(map)
+        .bindPopup(() => makePopup(place, index), {
+          maxWidth: 360
+        });
 
-L.marker([-23.5505, -46.6333])
-  .addTo(map)
-  .bindPopup(`
-    <div style="max-width:260px">
-      <h3>São Paulo, Brazil</h3>
-      <img src="${saoPauloPhoto}" alt="São Paulo" style="width:100%;border-radius:8px">
-      <p>Our South American adventure began in São Paulo — the first stop on a trip full of unforgettable places and memories.</p>
-    </div>
-  `);
+      marker.on('click', () => {
+        currentIndex = index;
+        updateChapterButtons();
+      });
 
-    const picker = document.createElement('input');
-    picker.type = 'file';
-    picker.accept = '.json,application/json';
-    picker.style.display = 'block';
-    picker.style.margin = '0 auto 20px';
-    document.querySelector('header').appendChild(picker);
+      markers.push(marker);
+    });
 
-    picker.addEventListener('change', async () => {
+    const chapterList = document.getElementById('chapterList');
+
+    destinations.forEach((place, index) => {
+      const button = document.createElement('button');
+      button.className = 'chapter-button';
+      button.textContent = `${index + 1}. ${place.name}`;
+      button.addEventListener('click', () => openChapter(index));
+      chapterList.appendChild(button);
+    });
+
+    function updateChapterButtons() {
+      document.querySelectorAll('.chapter-button').forEach((button, i) => {
+        button.classList.toggle('active', i === currentIndex);
+      });
+
+      destinations.forEach((place, i) => {
+        const label = document.getElementById(`label-${i}`);
+        if (label) {
+          label.classList.toggle('current', i === currentIndex);
+        }
+      });
+    }
+
+    function openChapter(index) {
+      currentIndex = index;
+      updateChapterButtons();
+
+      const place = destinations[index];
+      map.flyTo(place.coords, index === 14 ? 10 : 6, {
+        duration: 1.2
+      });
+
+      markers[index].openPopup();
+    }
+
+    document.getElementById('openBook').addEventListener('click', () => {
+      document.getElementById('cover').style.display = 'none';
+      document.getElementById('journey').style.display = 'block';
+
+      setTimeout(() => {
+        map.invalidateSize();
+        map.fitBounds(
+          L.latLngBounds(destinations.map(place => place.coords)),
+          { padding: [35, 35] }
+        );
+        openChapter(0);
+      }, 100);
+    });
+
+    document.getElementById('routeFile').addEventListener('change', async event => {
       const status = document.getElementById('status');
 
       try {
-        const file = picker.files[0];
+        const file = event.target.files[0];
         if (!file) return;
 
         const data = JSON.parse(await file.text());
-  
-const points = (data.locations || [])
-  .filter(p =>
-    Number.isFinite(p.lat) &&
-    Number.isFinite(p.lon) &&
-    Number.isFinite(p.time) &&
-    p.lat >= -57 && p.lat <= 13 &&
-    p.lon >= -82 && p.lon <= -34
-  )
-  .sort((a, b) => a.time - b.time);
 
+        const points = (data.locations || [])
+          .filter(p =>
+            Number.isFinite(p.lat) &&
+            Number.isFinite(p.lon) &&
+            Number.isFinite(p.time) &&
+            p.lat >= -57 && p.lat <= 13 &&
+            p.lon >= -82 && p.lon <= -34
+          )
+          .sort((a, b) => a.time - b.time);
 
         if (points.length < 2) {
           status.textContent =
@@ -158,27 +544,38 @@ const points = (data.locations || [])
           return;
         }
 
-        const route = L.polyline(
+        if (routeLayer) map.removeLayer(routeLayer);
+        if (startMarker) map.removeLayer(startMarker);
+        if (endMarker) map.removeLayer(endMarker);
+
+        routeLayer = L.polyline(
           points.map(p => [p.lat, p.lon]),
-          { color: '#26785c', weight: 3 }
+          { color: '#26785c', weight: 3, opacity: 0.8 }
         ).addTo(map);
 
-        L.marker([points[0].lat, points[0].lon])
-          .addTo(map).bindPopup('First recorded point');
+        startMarker = L.circleMarker(
+          [points[0].lat, points[0].lon],
+          { radius: 6, color: '#fff', fillColor: '#26785c', fillOpacity: 1 }
+        ).addTo(map).bindPopup('First recorded GPS point');
 
-        L.marker([
-          points[points.length - 1].lat,
-          points[points.length - 1].lon
-        ]).addTo(map).bindPopup('Last recorded point');
+        const last = points[points.length - 1];
 
-        map.fitBounds(route.getBounds(), { padding: [25, 25] });
+        endMarker = L.circleMarker(
+          [last.lat, last.lon],
+          { radius: 6, color: '#fff', fillColor: '#a15c2a', fillOpacity: 1 }
+        ).addTo(map).bindPopup('Last recorded GPS point');
+
         status.textContent =
-          `South American route loaded: ${points.length} GPS points.`;
+          `Travel route loaded: ${points.length} GPS points.`;
+
+        map.fitBounds(routeLayer.getBounds(), { padding: [35, 35] });
       } catch (error) {
         status.textContent =
           'Could not read this JSON. Check that it is a valid Polarsteps export.';
       }
     });
+
+    updateChapterButtons();
   </script>
 </body>
 </html>
