@@ -13,12 +13,39 @@
 .place-label{display:inline-block;white-space:nowrap;background:#1f5037;color:#fff;border:2px solid #fff;border-radius:6px;padding:7px 10px;font:bold 12px Arial,sans-serif;box-shadow:0 2px 9px #0006}.place-label.active{background:#a45f2b}.vehicle-icon{font-size:30px;line-height:36px;text-align:center;filter:drop-shadow(0 2px 3px #0008)}
 @media(max-width:700px){#cover{padding:0;background:#1e3529}.cover-portrait{width:100%;height:100dvh;max-height:none;box-shadow:none}.cover-content{padding:64px 28px}#chapter{left:0;right:0;top:auto;bottom:78px;width:100%;max-height:49dvh;border-radius:12px 12px 0 0;padding:19px}#chapter h2{font-size:29px}#photos img{height:110px}#photos a:first-child img{height:155px}#topbar{top:9px;left:9px;right:9px}#bottom{bottom:8px;gap:5px;padding:6px}#bottom button{padding:12px 10px;font-size:12px}#progress{min-width:72px;font-size:10px}#progress strong{font-size:11px}#travelStatus{top:67px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* Vintage journal cover and lightweight page-turn transition */
+#cover{perspective:1800px;background:rgba(22,34,27,.94);transition:background .9s ease}
+.cover-portrait{transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;transition:transform 1.15s cubic-bezier(.2,.7,.22,1),box-shadow 1.15s ease;z-index:2;border-radius:3px 13px 13px 3px;box-shadow:9px 12px 0 #b5a27f,14px 18px 45px #0008}
+.cover-portrait::before{z-index:0;background:linear-gradient(180deg,#241c15a8,transparent 43%,#20180d45 65%,#19160fc7)}
+.cover-portrait::after{border:2px solid #e7d9b0;inset:15px;z-index:1}
+.cover-portrait .aged-photo{position:absolute;inset:0;background:url('cover.jpeg') center/cover no-repeat;filter:sepia(.35) saturate(.76) contrast(.94) brightness(.87);z-index:0}
+.cover-content{z-index:3}
+#cover.turning{background:transparent;pointer-events:none}
+#cover.turning .cover-portrait{transform:rotateY(-112deg);box-shadow:0 8px 25px #0004}
+#cover h1{text-transform:uppercase;font-size:clamp(30px,4.7vh,49px);letter-spacing:.06em}
+#continentIntro{position:absolute;z-index:800;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;background:linear-gradient(90deg,rgba(18,36,27,.18),transparent 50%)}
+#continentIntro.visible{display:flex}
+.intro-card{pointer-events:auto;text-align:center;background:rgba(250,245,230,.96);border:1px solid #c7b48d;outline:1px solid #c7b48d;outline-offset:-10px;padding:35px 36px 30px;box-shadow:0 12px 50px #0005;max-width:min(88vw,410px)}
+.intro-card .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#856e49}
+.intro-card h2{font:normal clamp(30px,5vw,43px)/1.12 Georgia,serif;margin:16px 0 12px}
+.intro-card p{font:15px/1.6 Georgia,serif;margin:0 0 23px}
+#firstStop{padding:13px 20px;border:0;background:#254632;color:#fff;font-size:13px;letter-spacing:.04em}
+#firstStop:hover{background:#3d6248}
+@media(max-width:700px){.cover-portrait{box-shadow:none}.intro-card{padding:29px 23px}}
+@media(prefers-reduced-motion:reduce){.cover-portrait{transition:none}}
 </style>
 </head>
 <body>
-<section id="cover"><div class="cover-portrait"><div class="cover-content"><div><h1>Our South America Trip</h1><div class="year">2026</div></div><button id="start">Start the Trek →</button></div></div></section>
+<section id="cover"><div class="cover-portrait"><div class="aged-photo" aria-hidden="true"></div><div class="cover-content"><div><h1>Our South America Trip</h1><div class="year">2026</div></div><button id="start">Start the Trek →</button></div></div></section>
 <main id="experience">
 <div id="map" aria-label="Interactive map of our South America trip"></div>
+<section id="continentIntro" aria-label="South America overview"><div class="intro-card">
+<div class="eyebrow">The adventure begins · 2026</div>
+<h2>South America</h2>
+<p>Four friends. Four countries. One unforgettable trip.<br>Explore the places we visited, one chapter at a time.</p>
+<button id="firstStop">Explore the first stop →</button>
+</div></section>
 <div id="topbar"><button id="home">← Cover</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
 <div id="travelStatus" role="status" aria-live="polite"></div>
 <article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="photos"></div><p id="photoNote"></p></article>
@@ -78,8 +105,33 @@ function moveTo(target){
   }
   showStop(target,false);
 }
-document.getElementById('start').onclick=()=>{document.getElementById('cover').style.display='none';document.getElementById('experience').style.display='block';setTimeout(()=>{map.invalidateSize();showStop(0,false)},100)};
-document.getElementById('home').onclick=()=>{clearAnimation();chapter.style.display='none';document.getElementById('experience').style.display='none';document.getElementById('cover').style.display='flex';setControls(false)};
+const cover=document.getElementById('cover');
+const overview=document.getElementById('continentIntro');
+let opening=false;
+function continentView(){
+  chapter.style.display='none';
+  map.setView([-19,-61],3,{animate:false});
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('bottom').style.display='none';
+  overview.classList.add('visible');
+}
+document.getElementById('start').onclick=()=>{
+  if(opening)return;
+  opening=true;
+  document.getElementById('experience').style.display='block';
+  continentView();
+  map.invalidateSize();
+  // A single CSS page turn, rather than a continuously animated map.
+  requestAnimationFrame(()=>cover.classList.add('turning'));
+  setTimeout(()=>{cover.style.display='none';opening=false;map.invalidateSize()},1200);
+};
+document.getElementById('firstStop').onclick=()=>{
+  overview.classList.remove('visible');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('bottom').style.display='flex';
+  showStop(0);
+};
+document.getElementById('home').onclick=()=>{clearAnimation();chapter.style.display='none';overview.classList.remove('visible');document.getElementById('experience').style.display='none';cover.classList.remove('turning');cover.style.display='flex';setControls(false)};
 document.getElementById('close').onclick=()=>{chapter.style.display='none'};
 document.getElementById('next').onclick=()=>moveTo(active+1);
 document.getElementById('prev').onclick=()=>moveTo(active-1);
