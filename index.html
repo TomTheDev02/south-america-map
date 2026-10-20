@@ -48,7 +48,8 @@ const destinations=[
 {name:'Machu Picchu',country:'Peru',lat:-13.1631,lng:-72.545,mode:'walk',story:'After the Salkantay trek, we reached Machu Picchu.'}
 ];
 const saoPauloPhotos=['WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg','WhatsApp Image 2026-10-15 at 18.39.37.jpeg'];
-const photosByStop={0:saoPauloPhotos}; // Add arrays of photo filenames for other stops later.
+const rioPhotos=["rio-01.jpeg", "rio-02.jpeg", "rio-03.jpeg", "rio-04.jpeg", "rio-05.jpeg", "rio-06.jpeg", "rio-07.jpeg", "rio-08.jpeg"];
+const photosByStop={0:saoPauloPhotos,1:rioPhotos}; // Add arrays for other stops here.
 const map=L.map('map',{zoomControl:false,preferCanvas:true}).setView([-20,-60],4);
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors',maxZoom:19}).addTo(map);
