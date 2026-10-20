@@ -5,55 +5,87 @@
 <title>Our South America Trip</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f1e9;color:#263b2e}button{cursor:pointer;font:inherit}
-/* Portrait-format photographic journal cover */
-#cover{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:clamp(16px,3vh,34px);background:#e9e5dc;color:#fff;text-align:center}
-.cover-portrait{position:relative;height:min(92dvh,900px);width:min(74vh,520px);max-width:100%;overflow:hidden;background:#213b2c url('cover.jpeg') center center/cover no-repeat;box-shadow:0 18px 65px #19251e45}
-.cover-portrait:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,24,16,.66),transparent 38%,transparent 55%,rgba(8,24,16,.74));pointer-events:none}
-.cover-portrait:after{content:'';position:absolute;inset:15px;border:1px solid rgba(255,255,255,.8);pointer-events:none}
-.cover-content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(45px,7vh,80px) 30px clamp(45px,7vh,70px)}
-#cover h1{font:normal clamp(32px,4.4vh,50px)/1.08 Georgia,'Times New Roman',serif;letter-spacing:.045em;text-shadow:0 2px 14px #0008;margin:0;max-width:380px}
-#cover .year{font-size:11px;letter-spacing:.35em;text-transform:uppercase;margin-top:13px}
-#start{background:#f8f3e9;color:#193e2c;border:1px solid #f8f3e9;padding:15px 27px;font:700 12px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;position:relative;z-index:2}
-#start:hover{background:#fff;color:#122f21}
-@media(max-width:600px){#cover{padding:0;background:#1e3529}.cover-portrait{width:100%;height:100dvh;max-height:none;box-shadow:none}.cover-portrait:after{inset:13px}.cover-content{padding:65px 32px 65px}#cover h1{font-size:clamp(32px,9vw,44px)}}
-#experience{display:none;position:fixed;inset:0}#map{position:absolute;inset:0}#topbar{position:absolute;z-index:500;left:16px;right:16px;top:16px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}#topbar>*{pointer-events:auto}#home,#destSelect{background:#fffdf5;border:1px solid #d7d0bf;padding:12px 15px;border-radius:5px;color:#28412e;box-shadow:0 2px 12px #0002}#destSelect{max-width:50vw}
-#chapter{position:absolute;z-index:500;right:16px;top:75px;bottom:16px;width:min(380px,calc(100vw - 32px));overflow:auto;background:#fffdf6;box-shadow:0 6px 30px #0003;border-radius:7px;padding:22px;display:none}#chapter h2{font:normal 32px Georgia,serif;margin:4px 0}#chapter .country{letter-spacing:.13em;text-transform:uppercase;font-size:11px;color:#777}#chapter p{line-height:1.6}#photos{display:grid;grid-template-columns:1fr 1fr;gap:7px}#photos img{width:100%;height:135px;object-fit:cover;border-radius:3px}#nav{display:flex;gap:8px;margin-top:18px}#nav button{flex:1;padding:12px;background:#254a36;color:white;border:0;border-radius:4px}#close{float:right;border:0;background:transparent;font-size:24px}.place-label{display:inline-block;white-space:nowrap;background:#254a36;color:white;border:2px solid white;border-radius:5px;padding:7px 9px;font:bold 12px Arial;box-shadow:0 2px 8px #0005}
-@media(max-width:650px){#cover{padding:65px 35px 60px}#cover:after{inset:12px}#chapter{top:auto;bottom:0;right:0;left:0;width:100%;max-height:58vh;border-radius:12px 12px 0 0}#topbar{top:8px;left:8px;right:8px}}
+:root{--ink:#1d3529;--paper:#f8f5ec;--gold:#d6b989}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:var(--ink);background:#e7e3d9}button,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:wait}
+#cover{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;padding:22px;background:#e7e3d9;color:#fff;text-align:center}.cover-portrait{position:relative;height:min(93dvh,920px);width:min(74vh,540px);max-width:100%;overflow:hidden;background:#203629 url('cover.jpeg') center/cover no-repeat;box-shadow:0 18px 65px #19251e45}.cover-portrait:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#091c13a6,transparent 43%,transparent 52%,#091c13b8)}.cover-portrait:after{content:'';position:absolute;inset:15px;border:1px solid #ffffffc9;pointer-events:none}.cover-content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(50px,7vh,80px) 30px}#cover h1{font:normal clamp(34px,5vh,53px)/1.1 Georgia,serif;letter-spacing:.035em;text-shadow:0 2px 12px #0009;margin:0}.year{font-size:11px;letter-spacing:.35em;margin-top:12px}#start{border:1px solid #fff9ec;background:#fff9ec;color:#1e3b2b;padding:15px 27px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}#start:hover{background:white}
+#experience{display:none;position:fixed;inset:0}#map{position:absolute;inset:0;background:#dce6dd}#topbar{position:absolute;z-index:600;left:16px;right:16px;top:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}#topbar>*{pointer-events:auto}#home,#destSelect{background:#fffdf7;border:1px solid #ddd4bf;padding:12px 15px;border-radius:6px;color:var(--ink);box-shadow:0 2px 12px #0002}#destSelect{max-width:53vw}
+#chapter{position:absolute;z-index:550;right:16px;top:76px;bottom:92px;width:min(410px,calc(100vw - 32px));overflow:auto;background:var(--paper);box-shadow:0 12px 42px #0004;border-radius:10px;padding:25px;display:none}#chapter h2{font:normal clamp(29px,3vw,38px) Georgia,serif;margin:5px 0 14px}#chapter .country{letter-spacing:.17em;text-transform:uppercase;font-size:11px;color:#83765f}#chapter p{line-height:1.7;font-size:15px}#photos{display:grid;grid-template-columns:1fr 1fr;gap:8px}#photos img{width:100%;height:145px;object-fit:cover;border-radius:5px;display:block}#photos a:first-child{grid-column:span 2}#photos a:first-child img{height:205px}#photoNote{font-size:12px;color:#6b6b64}#close{float:right;background:transparent;border:0;font-size:25px;color:var(--ink)}
+#bottom{position:absolute;z-index:620;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:#fffdf7;padding:9px;border-radius:10px;box-shadow:0 6px 24px #0003;max-width:calc(100vw - 28px)}#bottom button{white-space:nowrap;padding:12px 15px;border:0;border-radius:6px;background:var(--ink);color:white}#bottom button:hover:not(:disabled){background:#37634b}#progress{font-size:12px;white-space:nowrap;text-align:center;min-width:98px}#progress strong{display:block;font-size:13px;margin-top:3px}#travelStatus{position:absolute;z-index:540;left:50%;transform:translateX(-50%);top:78px;background:#1c392bf2;color:white;padding:11px 18px;border-radius:8px;display:none;font-size:13px;text-align:center;box-shadow:0 3px 15px #0003;max-width:90vw}
+.place-label{display:inline-block;white-space:nowrap;background:#1f5037;color:#fff;border:2px solid #fff;border-radius:6px;padding:7px 10px;font:bold 12px Arial,sans-serif;box-shadow:0 2px 9px #0006}.place-label.active{background:#a45f2b}.vehicle-icon{font-size:30px;line-height:36px;text-align:center;filter:drop-shadow(0 2px 3px #0008)}
+@media(max-width:700px){#cover{padding:0;background:#1e3529}.cover-portrait{width:100%;height:100dvh;max-height:none;box-shadow:none}.cover-content{padding:64px 28px}#chapter{left:0;right:0;top:auto;bottom:78px;width:100%;max-height:49dvh;border-radius:12px 12px 0 0;padding:19px}#chapter h2{font-size:29px}#photos img{height:110px}#photos a:first-child img{height:155px}#topbar{top:9px;left:9px;right:9px}#bottom{bottom:8px;gap:5px;padding:6px}#bottom button{padding:12px 10px;font-size:12px}#progress{min-width:72px;font-size:10px}#progress strong{font-size:11px}#travelStatus{top:67px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <section id="cover"><div class="cover-portrait"><div class="cover-content"><div><h1>Our South America Trip</h1><div class="year">2026</div></div><button id="start">Start the Trek →</button></div></div></section>
-<main id="experience"><div id="map"></div><div id="topbar"><button id="home">← Cover</button><select id="destSelect" aria-label="Choose a destination"><option value="">Choose a destination</option></select></div><article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="photos"></div><div id="nav"><button id="prev">← Previous</button><button id="next">Next stop →</button></div></article></main>
+<main id="experience">
+<div id="map" aria-label="Interactive map of our South America trip"></div>
+<div id="topbar"><button id="home">← Cover</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
+<div id="travelStatus" role="status" aria-live="polite"></div>
+<article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="photos"></div><p id="photoNote"></p></article>
+<div id="bottom"><button id="prev">← Previous</button><div id="progress"><span>OUR JOURNEY</span><strong id="progressLabel">01 / 18</strong></div><button id="next">Next stop →</button></div>
+</main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// Transport describes the journey ARRIVING at each stop. Change 'bus' to 'plane' as needed.
 const destinations=[
-['São Paulo','Brazil',-23.5505,-46.6333,'Our South American adventure began in São Paulo — the first stop on a trip full of unforgettable places and memories.'],
-['Rio de Janeiro','Brazil',-22.9068,-43.1729,'Beaches, city life and the spectacular scenery of Rio.'],
-['Ilha Grande','Brazil',-23.142,-44.169,'An island escape with rainforest, beaches and boat journeys.'],
-['Porto Alegre','Brazil',-30.0346,-51.2177,'Our adventure continued in southern Brazil.'],
-['Buenos Aires','Argentina',-34.6037,-58.3816,'A new country and a new chapter in Buenos Aires.'],
-['Iguazú Falls','Argentina / Brazil',-25.695,-54.436,'An unforgettable stop at the mighty Iguazú waterfalls.'],
-['Corrientes','Argentina',-27.469,-58.830,'A stop in Corrientes on our way through northern Argentina.'],
-['Salta','Argentina',-24.7821,-65.4232,'Into the dramatic landscapes of northern Argentina.'],
-['Cafayate','Argentina',-26.0728,-65.9761,'Colourful valleys and spectacular scenery.'],
-['Cachi','Argentina',-25.12,-66.1667,'A small town surrounded by striking Andean landscapes.'],
-['Mendoza','Argentina',-32.8895,-68.8458,'Wine country in the shadow of the Andes.'],
-['Santiago','Chile',-33.4489,-70.6693,'Across the border to Chile and Santiago.'],
-['Lima','Peru',-12.0464,-77.0428,'The beginning of our adventure through Peru.'],
-['Paracas','Peru',-13.8369,-76.25,'Where the desert meets the Pacific.'],
-['Huacachina','Peru',-14.0875,-75.7625,'A desert oasis surrounded by enormous dunes.'],
-['Arequipa','Peru',-16.409,-71.5375,'Another stop on the way towards the Andes.'],
-['Cusco','Peru',-13.532,-71.9675,'Our base for exploring the Peruvian Andes.'],
-['Machu Picchu','Peru',-13.1631,-72.545,'After the Salkantay trek, we reached Machu Picchu.']
+{name:'São Paulo',country:'Brazil',lat:-23.5505,lng:-46.6333,mode:'start',story:'Our South American adventure began in São Paulo — the first stop on a trip full of unforgettable places and memories.'},
+{name:'Rio de Janeiro',country:'Brazil',lat:-22.9068,lng:-43.1729,mode:'bus',story:'Beaches, city life and the spectacular scenery of Rio.'},
+{name:'Ilha Grande',country:'Brazil',lat:-23.142,lng:-44.169,mode:'bus',story:'An island escape with rainforest, beaches and boat journeys.'},
+{name:'Porto Alegre',country:'Brazil',lat:-30.0346,lng:-51.2177,mode:'bus',story:'Our adventure continued in southern Brazil.'},
+{name:'Buenos Aires',country:'Argentina',lat:-34.6037,lng:-58.3816,mode:'bus',story:'A new country and a new chapter in Buenos Aires.'},
+{name:'Iguazú Falls',country:'Argentina / Brazil',lat:-25.695,lng:-54.436,mode:'bus',story:'An unforgettable stop at the mighty Iguazú waterfalls.'},
+{name:'Corrientes',country:'Argentina',lat:-27.469,lng:-58.830,mode:'bus',story:'A stop in Corrientes on our way through northern Argentina.'},
+{name:'Salta',country:'Argentina',lat:-24.7821,lng:-65.4232,mode:'bus',story:'Into the dramatic landscapes of northern Argentina.'},
+{name:'Cafayate',country:'Argentina',lat:-26.0728,lng:-65.9761,mode:'bus',story:'Colourful valleys and spectacular scenery.'},
+{name:'Cachi',country:'Argentina',lat:-25.12,lng:-66.1667,mode:'bus',story:'A small town surrounded by striking Andean landscapes.'},
+{name:'Mendoza',country:'Argentina',lat:-32.8895,lng:-68.8458,mode:'bus',story:'Wine country in the shadow of the Andes.'},
+{name:'Santiago',country:'Chile',lat:-33.4489,lng:-70.6693,mode:'bus',story:'Across the border to Chile and Santiago.'},
+{name:'Lima',country:'Peru',lat:-12.0464,lng:-77.0428,mode:'plane',story:'The beginning of our adventure through Peru.'},
+{name:'Paracas',country:'Peru',lat:-13.8369,lng:-76.25,mode:'bus',story:'Where the desert meets the Pacific.'},
+{name:'Huacachina',country:'Peru',lat:-14.0875,lng:-75.7625,mode:'bus',story:'A desert oasis surrounded by enormous dunes.'},
+{name:'Arequipa',country:'Peru',lat:-16.409,lng:-71.5375,mode:'bus',story:'Another stop on the way towards the Andes.'},
+{name:'Cusco',country:'Peru',lat:-13.532,lng:-71.9675,mode:'bus',story:'Our base for exploring the Peruvian Andes.'},
+{name:'Machu Picchu',country:'Peru',lat:-13.1631,lng:-72.545,mode:'walk',story:'After the Salkantay trek, we reached Machu Picchu.'}
 ];
 const saoPauloPhotos=['WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg','WhatsApp Image 2026-10-15 at 18.39.37.jpeg'];
-const map=L.map('map',{zoomControl:false}).setView([-20,-60],4);L.control.zoom({position:'bottomright'}).addTo(map);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors',maxZoom:19}).addTo(map);
-const markers=destinations.map((p,i)=>L.marker([p[2],p[3]],{icon:L.divIcon({className:'',html:`<div class="place-label">${p[0]}</div>`,iconSize:[120,32],iconAnchor:[60,16]})}).addTo(map).on('click',()=>openChapter(i)));
-const select=document.getElementById('destSelect');destinations.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${i+1}. ${p[0]}`;select.appendChild(o)});
-let active=0;
-function openChapter(i){active=(i+destinations.length)%destinations.length;const p=destinations[active];select.value=String(active);document.getElementById('country').textContent=p[1];document.getElementById('placeName').textContent=p[0];document.getElementById('story').textContent=p[4];document.getElementById('photos').innerHTML=active===0?saoPauloPhotos.map(f=>{const src=encodeURIComponent(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="São Paulo travel photo" loading="lazy"></a>`}).join(''):'';document.getElementById('chapter').style.display='block';map.flyTo([p[2],p[3]],11,{duration:1.8});}
-document.getElementById('start').onclick=()=>{document.getElementById('cover').style.display='none';document.getElementById('experience').style.display='block';setTimeout(()=>{map.invalidateSize();map.fitBounds(L.latLngBounds(destinations.map(p=>[p[2],p[3]])),{padding:[50,50]})},60)};
-document.getElementById('home').onclick=()=>{document.getElementById('experience').style.display='none';document.getElementById('cover').style.display='flex'};
-document.getElementById('close').onclick=()=>document.getElementById('chapter').style.display='none';document.getElementById('prev').onclick=()=>openChapter(active-1);document.getElementById('next').onclick=()=>openChapter(active+1);select.onchange=()=>{if(select.value!=='')openChapter(Number(select.value))};
-</script></body></html>
+const photosByStop={0:saoPauloPhotos}; // Add arrays of photo filenames for other stops later.
+const map=L.map('map',{zoomControl:false,preferCanvas:true}).setView([-20,-60],4);
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors',maxZoom:19}).addTo(map);
+const point=p=>L.latLng(p.lat,p.lng);
+const markers=destinations.map((p,i)=>L.marker(point(p),{icon:L.divIcon({className:'',html:`<div class="place-label" id="pin-${i}">${i+1}. ${p.name}</div>`,iconSize:[130,36],iconAnchor:[65,18]})}).addTo(map).on('click',()=>jumpTo(i)));
+const select=document.getElementById('destSelect');select.innerHTML='<option value="">Choose a destination</option>';
+destinations.forEach((p,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=`${i+1}. ${p.name}`;select.appendChild(option)});
+const chapter=document.getElementById('chapter');const status=document.getElementById('travelStatus');
+let active=0,travelling=false,vehicle=null,segment=null,completedSegments=[],animationId=null,tripToken=0;
+const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function setControls(busy){travelling=busy;document.getElementById('next').disabled=busy||active===destinations.length-1;document.getElementById('prev').disabled=busy||active===0;select.disabled=busy;document.getElementById('progressLabel').textContent=`${String(active+1).padStart(2,'0')} / ${destinations.length}`;}
+function updatePins(){destinations.forEach((p,i)=>{const el=document.getElementById('pin-'+i);if(el)el.classList.toggle('active',i===active)})}
+function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=encodeURIComponent(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Click a photograph to see it full size.':'More photographs and memories coming soon.';chapter.style.display='block';status.style.display='none';setControls(false);updatePins()}
+function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
+function showStop(i,animated=true){const p=destinations[i];active=i;updatePins();select.value=String(i);setControls(false);chapter.style.display='none';if(animated&&!reducedMotion){map.flyTo(point(p),10,{duration:1.4});setTimeout(()=>{if(!travelling&&active===i)showChapter(i)},1500)}else{map.setView(point(p),10);showChapter(i)}}
+function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
+function moveTo(target){if(travelling||target<0||target>=destinations.length||target===active)return;const from=destinations[active],to=destinations[target];
+// Non-adjacent jumps go directly to the destination; Next/Previous animate one segment.
+if(Math.abs(target-active)!==1){jumpTo(target);return}
+clearAnimation();const token=tripToken;chapter.style.display='none';active=target;setControls(true);updatePins();select.value=String(target);
+const isForward=target>destinations.indexOf(from);const arriving=isForward?to:from;const iconType=arriving.mode;
+const emoji=iconType==='plane'?'✈️':iconType==='walk'?'🥾':'🚌';
+status.textContent=`${from.name} → ${to.name} · ${iconType==='plane'?'Flying':iconType==='walk'?'Walking':'Travelling by road'}`;status.style.display='block';
+const a=point(from),b=point(to),bounds=L.latLngBounds([a,b]);const travelZoom=Math.min(map.getBoundsZoom(bounds.pad(.35)),7);
+const leg=L.polyline([a,b],{color:'#ad7741',weight:3,dashArray:'7 8',opacity:.8}).addTo(map);
+segment=leg;vehicle=L.marker(a,{icon:L.divIcon({className:'',html:`<div class="vehicle-icon">${emoji}</div>`,iconSize:[40,40],iconAnchor:[20,20]}),zIndexOffset:1500}).addTo(map);
+const travelDuration=reducedMotion?100:Math.min(3700,Math.max(2100,a.distanceTo(b)/140000*850));
+const startTravel=()=>{if(token!==tripToken)return;const start=performance.now();let lastPan=0;const step=now=>{if(token!==tripToken)return;const t=Math.min(1,(now-start)/travelDuration);const eased=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;const pos=L.latLng(a.lat+(b.lat-a.lat)*eased,a.lng+(b.lng-a.lng)*eased);vehicle.setLatLng(pos);if(now-lastPan>75){map.panTo(pos,{animate:false});lastPan=now}if(t<1){animationId=requestAnimationFrame(step)}else{animationId=null;completedSegments.push(leg);segment=null;map.removeLayer(vehicle);vehicle=null;status.textContent=`Arriving in ${to.name}…`;map.flyTo(b,10,{duration:reducedMotion?.1:1.3});setTimeout(()=>{if(token===tripToken)showChapter(target)},reducedMotion?150:1400)}};animationId=requestAnimationFrame(step)};
+map.flyToBounds(bounds.pad(.3),{duration:reducedMotion?.1:1.15,maxZoom:travelZoom});setTimeout(startTravel,reducedMotion?150:1250);
+}
+document.getElementById('start').onclick=()=>{document.getElementById('cover').style.display='none';document.getElementById('experience').style.display='block';setTimeout(()=>{map.invalidateSize();map.fitBounds(L.latLngBounds(destinations.map(point)),{padding:[50,50]});setTimeout(()=>showStop(0),reducedMotion?100:650)},100)};
+document.getElementById('home').onclick=()=>{clearAnimation();chapter.style.display='none';document.getElementById('experience').style.display='none';document.getElementById('cover').style.display='flex';setControls(false)};
+document.getElementById('close').onclick=()=>{chapter.style.display='none'};
+document.getElementById('next').onclick=()=>moveTo(active+1);
+document.getElementById('prev').onclick=()=>moveTo(active-1);
+select.onchange=()=>{if(select.value!=='')jumpTo(Number(select.value))};
+setControls(false);
+</script>
+</body>
+</html>
