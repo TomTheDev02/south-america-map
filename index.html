@@ -63,23 +63,21 @@ function setControls(busy){travelling=busy;document.getElementById('next').disab
 function updatePins(){destinations.forEach((p,i)=>{const el=document.getElementById('pin-'+i);if(el)el.classList.toggle('active',i===active)})}
 function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=encodeURIComponent(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Click a photograph to see it full size.':'More photographs and memories coming soon.';chapter.style.display='block';status.style.display='none';setControls(false);updatePins()}
 function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
-function showStop(i,animated=true){const p=destinations[i];active=i;updatePins();select.value=String(i);setControls(false);chapter.style.display='none';if(animated&&!reducedMotion){map.flyTo(point(p),9,{duration:1.1});setTimeout(()=>{if(!travelling&&active===i)showChapter(i)},1200)}else{map.setView(point(p),9);showChapter(i)}}
+function showStop(i){const p=destinations[i];active=i;updatePins();select.value=String(i);map.setView(point(p),9,{animate:false});showChapter(i)}
 function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
-function moveTo(target){if(travelling||target<0||target>=destinations.length||target===active)return;const from=destinations[active],to=destinations[target];
-// Non-adjacent jumps go directly to the destination; Next/Previous animate one segment.
-if(Math.abs(target-active)!==1){jumpTo(target);return}
-clearAnimation();const token=tripToken;chapter.style.display='none';active=target;setControls(true);updatePins();select.value=String(target);
-const isForward=target>destinations.indexOf(from);const arriving=isForward?to:from;const iconType=arriving.mode;
-const emoji=iconType==='plane'?'✈️':iconType==='walk'?'🥾':'🚌';
-status.textContent=`${from.name} → ${to.name} · ${iconType==='plane'?'Flying':iconType==='walk'?'Walking':'Travelling by road'}`;status.style.display='block';
-const a=point(from),b=point(to),bounds=L.latLngBounds([a,b]);const travelZoom=Math.min(map.getBoundsZoom(bounds.pad(.35)),7);
-const leg=L.polyline([a,b],{color:'#ad7741',weight:3,dashArray:'7 8',opacity:.8}).addTo(map);
-segment=leg;vehicle=L.marker(a,{icon:L.divIcon({className:'',html:`<div class="vehicle-icon">${emoji}</div>`,iconSize:[40,40],iconAnchor:[20,20]}),zIndexOffset:1500}).addTo(map);
-const travelDuration=reducedMotion?100:Math.min(3000,Math.max(1800,a.distanceTo(b)/140000*650));
-const startTravel=()=>{if(token!==tripToken)return;const start=performance.now();const step=now=>{if(token!==tripToken)return;const t=Math.min(1,(now-start)/travelDuration);const eased=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;const pos=L.latLng(a.lat+(b.lat-a.lat)*eased,a.lng+(b.lng-a.lng)*eased);vehicle.setLatLng(pos);if(t<1){animationId=requestAnimationFrame(step)}else{animationId=null;completedSegments.push(leg);segment=null;map.removeLayer(vehicle);vehicle=null;status.textContent=`Arriving in ${to.name}…`;map.flyTo(b,9,{duration:reducedMotion?.1:1.1});setTimeout(()=>{if(token===tripToken)showChapter(target)},reducedMotion?150:1200)}};animationId=requestAnimationFrame(step)};
-map.flyToBounds(bounds.pad(.45),{duration:reducedMotion?.1:0.9,maxZoom:travelZoom});setTimeout(startTravel,reducedMotion?150:1000);
+function moveTo(target){
+  if(target<0||target>=destinations.length||target===active)return;
+  const from=destinations[active],to=destinations[target];
+  clearAnimation();
+  // Show the completed leg as a static route, without animating a vehicle.
+  if(Math.abs(target-active)===1){
+    completedSegments.push(L.polyline([point(from),point(to)],{
+      color:'#ad7741',weight:3,dashArray:'7 8',opacity:.8
+    }).addTo(map));
+  }
+  showStop(target,false);
 }
-document.getElementById('start').onclick=()=>{document.getElementById('cover').style.display='none';document.getElementById('experience').style.display='block';setTimeout(()=>{map.invalidateSize();map.fitBounds(L.latLngBounds(destinations.map(point)),{padding:[50,50]});setTimeout(()=>showStop(0),reducedMotion?100:650)},100)};
+document.getElementById('start').onclick=()=>{document.getElementById('cover').style.display='none';document.getElementById('experience').style.display='block';setTimeout(()=>{map.invalidateSize();showStop(0,false)},100)};
 document.getElementById('home').onclick=()=>{clearAnimation();chapter.style.display='none';document.getElementById('experience').style.display='none';document.getElementById('cover').style.display='flex';setControls(false)};
 document.getElementById('close').onclick=()=>{chapter.style.display='none'};
 document.getElementById('next').onclick=()=>moveTo(active+1);
