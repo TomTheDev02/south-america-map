@@ -63,6 +63,17 @@
 #slideImage{display:block;max-width:100%;max-height:calc(100dvh - 190px);width:auto;height:auto;object-fit:contain;border-radius:4px;box-shadow:0 15px 50px #0009}
 #slideTitle{font:normal clamp(22px,3vw,30px) Georgia,serif;margin-top:7px}
 #slideCounter{font-size:12px;letter-spacing:.18em;color:#c3c7c0}
+#slideCaption{font:italic 15px/1.5 Georgia,serif;max-width:720px;min-height:22px;white-space:pre-wrap}
+#editCaptionButton{background:transparent;color:#d6b989;border:1px solid #d6b989;border-radius:5px;padding:8px 14px;cursor:pointer}
+#captionEditor{display:none;width:min(100%,650px);background:#f8f5ec;color:#1d3529;padding:13px;border-radius:8px;text-align:left}
+#captionEditor textarea{width:100%;min-height:76px;padding:9px;resize:vertical;font:14px Arial,sans-serif}
+#captionEditor input{width:100%;padding:9px;margin:5px 0 9px;font:14px Arial,sans-serif}
+#captionEditor button{background:#254632;color:#fff;border:0;padding:10px 12px;border-radius:5px;margin:5px 5px 0 0}
+#captionMessage{font-size:12px;line-height:1.4;min-height:15px}
+#slideshow.editing{overflow-y:auto;justify-content:flex-start}
+#slideshow.editing #slideImage{max-height:45dvh}
+#slideshow:not(.editing) #slideImage{max-height:calc(100dvh - 235px)}
+@media(max-width:700px){#slideCaption{font-size:13px}#slideshow{gap:9px}}
 .slide-arrow{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:62px;border:1px solid #ffffff55;border-radius:5px;background:#ffffff20;color:white;font-size:32px;cursor:pointer}
 .slide-arrow:hover,.slide-arrow:focus-visible{background:#ffffff44}
 #slidePrev{left:14px}#slideNext{right:14px}
@@ -95,6 +106,21 @@
 <button id="slidePrev" class="slide-arrow" aria-label="Previous photograph">‹</button>
 <img id="slideImage" alt="Travel photograph">
 <div id="slideTitle"></div><div id="slideCounter" aria-live="polite"></div>
+<div id="slideCaption" aria-live="polite"></div>
+<button id="editCaptionButton" type="button" style="display:none">✎ Edit caption</button>
+<div id="captionEditor">
+<label for="captionText"><strong>Photo caption</strong></label>
+<textarea id="captionText" placeholder="Write the story behind this photograph..."></textarea>
+<details style="margin-top:10px"><summary>GitHub publishing settings</summary>
+<label for="githubRepo">Repository (owner/repository)</label>
+<input id="githubRepo" placeholder="your-username/south-america-map" autocomplete="off">
+<label for="githubToken">Fine-grained GitHub token (Contents: Read and write)</label>
+<input id="githubToken" type="password" placeholder="Paste token to publish; never added to the website" autocomplete="off">
+<small>Token stays in this browser tab's memory only. Never commit it to GitHub or share it.</small>
+</details>
+<div><button id="saveCaption" type="button">Save to GitHub</button><button id="cancelCaption" type="button">Cancel</button></div>
+<div id="captionMessage" role="status" aria-live="polite"></div>
+</div>
 <button id="slideNext" class="slide-arrow" aria-label="Next photograph">›</button>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -188,7 +214,63 @@ select.onchange=()=>{if(select.value!=='')jumpTo(Number(select.value))};
 setControls(false);
 
 // Full-screen, in-page destination photo slideshow.
-let slidePhotos=[],slideIndex=0,slidePlace='';
+let slidePhotos=[],slideIndex=0,slidePlace='',slideStopIndex=0;
+let publishedCaptions={};
+const captionKey=(stopIndex,photoIndex)=>`${stopIndex}:${photoIndex}`;
+const editMode=new URLSearchParams(location.search).get('edit')==='1';
+const captionLabel=document.getElementById('slideCaption');
+const captionEditor=document.getElementById('captionEditor');
+const captionInput=document.getElementById('captionText');
+const captionMessage=document.getElementById('captionMessage');
+let githubToken=''; // Deliberately not persisted in localStorage or the repository.
+async function loadCaptions(){
+  try{
+    const response=await fetch('captions.json',{cache:'no-store'});
+    if(response.ok){const data=await response.json();publishedCaptions=data&&typeof data==='object'&&!Array.isArray(data)?data:{};}
+  }catch(error){console.warn('Captions not yet available:',error)}
+  if(slideshow.classList.contains('open'))showSlide();
+}
+loadCaptions();
+function updateCaption(){captionLabel.textContent=publishedCaptions[captionKey(slideStopIndex,slideIndex)]||'';}
+function closeCaptionEditor(){captionEditor.style.display='none';slideshow.classList.remove('editing');captionMessage.textContent='';}
+function openCaptionEditor(){
+  captionInput.value=publishedCaptions[captionKey(slideStopIndex,slideIndex)]||'';
+  captionEditor.style.display='block';slideshow.classList.add('editing');
+  captionMessage.textContent='To publish, enter your repository and GitHub token under publishing settings.';
+  captionInput.focus();
+}
+function base64Utf8(value){const bytes=new TextEncoder().encode(value);let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return btoa(binary)}
+async function saveCaptionToGithub(){
+  const repo=document.getElementById('githubRepo').value.trim();
+  const token=document.getElementById('githubToken').value.trim()||githubToken;
+  if(!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo)||!token){captionMessage.textContent='Enter owner/repository and a GitHub token in publishing settings first.';return;}
+  githubToken=token;
+  document.getElementById('githubToken').value='';
+  const button=document.getElementById('saveCaption');button.disabled=true;
+  captionMessage.textContent='Publishing caption to GitHub…';
+  const key=captionKey(slideStopIndex,slideIndex),value=captionInput.value.trim();
+  const api=`https://api.github.com/repos/${repo}/contents/captions.json`;
+  const headers={'Accept':'application/vnd.github+json','Authorization':`Bearer ${token}`,'X-GitHub-Api-Version':'2022-11-28'};
+  try{
+    const existing=await fetch(api,{headers});
+    if(!existing.ok&&existing.status!==404)throw new Error(`Cannot read captions.json (GitHub HTTP ${existing.status}). Check repository and token permissions.`);
+    let current={},sha;
+    if(existing.ok){const file=await existing.json();sha=file.sha;const raw=atob(file.content.replace(/\s/g,''));const bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));current=JSON.parse(new TextDecoder().decode(bytes));}
+    if(!current||typeof current!=='object'||Array.isArray(current))current={};
+    if(value)current[key]=value;else delete current[key];
+    const payload={message:`Update photo caption for ${slidePlace} photo ${slideIndex+1}`,content:base64Utf8(JSON.stringify(current,null,2)+'\n')};
+    if(sha)payload.sha=sha;
+    const result=await fetch(api,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!result.ok){let message='';try{message=(await result.json()).message||''}catch{}throw new Error(`GitHub HTTP ${result.status}: ${message}`)}
+    publishedCaptions=current;updateCaption();
+    captionMessage.textContent='Published to GitHub. Public website updates after GitHub Pages deploys.';
+  }catch(error){captionMessage.textContent=`Not saved: ${error.message}`;}
+  finally{button.disabled=false;}
+}
+document.getElementById('editCaptionButton').onclick=openCaptionEditor;
+document.getElementById('cancelCaption').onclick=closeCaptionEditor;
+document.getElementById('saveCaption').onclick=saveCaptionToGithub;
+
 const slideshow=document.getElementById('slideshow');
 const slideImage=document.getElementById('slideImage');
 let slideshowReturnFocus=null;
@@ -196,6 +278,8 @@ function showSlide(){
   if(!slidePhotos.length)return;
   slideImage.src=photoUrl(slidePhotos[slideIndex]);
   slideImage.alt=`${slidePlace} photograph ${slideIndex+1}`;
+  closeCaptionEditor();
+  updateCaption();
   document.getElementById('slideTitle').textContent=slidePlace;
   document.getElementById('slideCounter').textContent=`${String(slideIndex+1).padStart(2,'0')} / ${String(slidePhotos.length).padStart(2,'0')}`;
 }
@@ -203,6 +287,8 @@ function openSlideshow(stopIndex,photoIndex=0){
   slidePhotos=photosByStop[stopIndex]||[];
   if(!slidePhotos.length)return;
   slidePlace=destinations[stopIndex].name;
+  slideStopIndex=stopIndex;
+  document.getElementById('editCaptionButton').style.display=editMode?'inline-block':'none';
   slideIndex=Math.max(0,Math.min(photoIndex,slidePhotos.length-1));
   slideshowReturnFocus=document.activeElement;
   slideshow.classList.add('open');
@@ -221,6 +307,7 @@ function closeSlideshow(){
   slideshow.setAttribute('aria-hidden','true');
   document.body.style.overflow='';
   slideImage.removeAttribute('src');
+  closeCaptionEditor();
   if(slideshowReturnFocus&&slideshowReturnFocus.isConnected)slideshowReturnFocus.focus();
 }
 document.getElementById('launchSlides').addEventListener('click',()=>openSlideshow(active,0));
@@ -229,6 +316,7 @@ document.getElementById('slidePrev').addEventListener('click',()=>changeSlide(-1
 document.getElementById('slideClose').addEventListener('click',closeSlideshow);
 document.addEventListener('keydown',event=>{
   if(!slideshow.classList.contains('open'))return;
+  if(event.target.closest('textarea,input'))return;
   if(event.key==='ArrowRight'){event.preventDefault();changeSlide(1)}
   else if(event.key==='ArrowLeft'){event.preventDefault();changeSlide(-1)}
   else if(event.key==='Escape'){event.preventDefault();closeSlideshow()}
