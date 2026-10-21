@@ -122,8 +122,8 @@ const destinations=[
 ];
 const saoPauloPhotos=['WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg','WhatsApp Image 2026-10-15 at 18.39.37.jpeg'];
 const rioPhotos=["rio-01.jpeg", "rio-02.jpeg", "rio-03.jpeg", "rio-04.jpeg", "rio-05.jpeg", "rio-06.jpeg", "rio-07.jpeg", "rio-08.jpeg"];
-const ilhaGrandePhotos=Array.from({length:8},(_,i)=>`ilha-grande/ilha-grande-${String(i+1).padStart(2,'0')}.jpg`);
-const portoAlegrePhotos=Array.from({length:8},(_,i)=>`porto-alegre/porto-alegre-${String(i+1).padStart(2,'0')}.jpg`);
+const ilhaGrandePhotos=Array.from({length:8},(_,i)=>`ilha-grande-${String(i+1).padStart(2,'0')}.jpg`);
+const portoAlegrePhotos=Array.from({length:8},(_,i)=>`porto-alegre-${String(i+1).padStart(2,'0')}.jpg`);
 const photosByStop={0:saoPauloPhotos,1:rioPhotos,2:ilhaGrandePhotos,3:portoAlegrePhotos};
 const photoUrl=filename=>filename.split('/').map(encodeURIComponent).join('/');
 const map=L.map('map',{zoomControl:false,preferCanvas:true}).setView([-20,-60],4);
