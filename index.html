@@ -54,6 +54,9 @@
 @media(prefers-reduced-motion:reduce){#cover .cover-portrait{transition:none}}
 
 
+/* Destination photo journal launch button */
+#launchSlides{display:block;width:100%;margin:16px 0 18px;padding:14px 16px;border:0;border-radius:6px;background:#254632;color:#fff;font-weight:700;letter-spacing:.03em}
+#launchSlides:hover{background:#3d6248}
 /* Immersive in-page photo slideshow */
 #slideshow{position:fixed;inset:0;z-index:5000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,18,15,.98);color:#f8f5ec;padding:60px 72px 36px;text-align:center}
 #slideshow.open{display:flex}
@@ -83,7 +86,7 @@
 </div></section>
 <div id="topbar"><button id="home">← Cover</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
 <div id="travelStatus" role="status" aria-live="polite"></div>
-<article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="photos"></div><p id="photoNote"></p></article>
+<article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><button id="launchSlides" type="button" style="display:none">▶ View full-screen photo journal</button><div id="photos"></div><p id="photoNote"></p></article>
 <div id="bottom"><button id="prev">← Previous</button><div id="progress"><span>OUR JOURNEY</span><strong id="progressLabel">01 / 18</strong></div><button id="next">Next stop →</button></div>
 </main>
 
@@ -132,7 +135,7 @@ let active=0,travelling=false,vehicle=null,segment=null,completedSegments=[],ani
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function setControls(busy){travelling=busy;document.getElementById('next').disabled=busy||active===destinations.length-1;document.getElementById('prev').disabled=busy||active===0;select.disabled=busy;document.getElementById('progressLabel').textContent=`${String(active+1).padStart(2,'0')} / ${destinations.length}`;}
 function updatePins(){destinations.forEach((p,i)=>{const el=document.getElementById('pin-'+i);if(el)el.classList.toggle('active',i===active)})}
-function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=encodeURIComponent(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Click a photograph to open the full-screen slideshow.':'More photographs and memories coming soon.';chapter.style.display='block';status.style.display='none';setControls(false);updatePins()}
+function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=encodeURIComponent(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Use the arrows or keyboard to explore the photo journal.':'More photographs and memories coming soon.';document.getElementById('launchSlides').style.display=files.length?'block':'none';chapter.style.display='block';status.style.display='none';setControls(false);updatePins();if(files.length)openSlideshow(i,0)}
 function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
 function showStop(i){const p=destinations[i];active=i;updatePins();select.value=String(i);map.setView(point(p),9,{animate:false});showChapter(i)}
 function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
@@ -217,6 +220,7 @@ function closeSlideshow(){
   slideImage.removeAttribute('src');
   if(slideshowReturnFocus&&slideshowReturnFocus.isConnected)slideshowReturnFocus.focus();
 }
+document.getElementById('launchSlides').addEventListener('click',()=>openSlideshow(active,0));
 document.getElementById('slideNext').addEventListener('click',()=>changeSlide(1));
 document.getElementById('slidePrev').addEventListener('click',()=>changeSlide(-1));
 document.getElementById('slideClose').addEventListener('click',closeSlideshow);
