@@ -99,6 +99,35 @@
 @keyframes stampIn{from{opacity:0;transform:rotate(-13deg) scale(1.6)}to{opacity:.9;transform:rotate(-13deg) scale(1)}}
 @media(max-width:650px){.country-page{grid-template-columns:1fr;gap:4px;padding:35px 25px 25px}.country-art{min-height:145px}#countryShape{max-height:190px}.country-stamp{width:83px;height:83px;font-size:10px;float:right;margin-top:-15px}#countryName{font-size:40px}#countryStops{margin-bottom:12px}#enterCountry{margin-top:14px}}
 @media(prefers-reduced-motion:reduce){.country-stamp{animation:none}}
+
+/* Brazil editorial refresh — vintage travel-poster opening */
+.country-page.brazil-editorial{width:min(94vw,920px);grid-template-columns:1.05fr 1fr;gap:30px;background:#f5edda}
+.country-page.brazil-editorial .country-art{position:relative;min-height:480px;overflow:hidden;background:#284d3c;border:10px solid #efe2c4;box-shadow:inset 0 0 0 2px #c8ac72}
+.country-page.brazil-editorial .country-art::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#143b32b0 0%,transparent 35%,#143b32a6 100%),url('rio-01.jpeg') center/cover;filter:sepia(.22) saturate(.85);transform:scale(1.02)}
+.country-page.brazil-editorial .country-art::after{content:'BRASIL\A A JOURNEY THROUGH BRAZIL';white-space:pre;position:absolute;z-index:2;left:0;right:0;top:26px;text-align:center;color:#f8e9bd;font:normal clamp(31px,4.2vw,54px)/1.22 Georgia,serif;letter-spacing:.09em;text-shadow:0 2px 12px #09251c}
+.country-page.brazil-editorial #countryShape{position:relative;z-index:1;width:40%;height:190px;margin-top:170px;opacity:.85;filter:drop-shadow(2px 3px 8px #001a12)}
+.country-page.brazil-editorial .country-art .poster-footer{display:block;position:absolute;z-index:2;bottom:20px;left:0;right:0;color:#f7e8c4;font:12px Georgia,serif;letter-spacing:.18em;text-align:center;text-shadow:0 2px 5px #142d24}
+.country-art .poster-footer{display:none}
+/* Four-stop progress tracker */
+#brazilRoute{display:none;margin:18px 0 20px;padding:15px 12px;background:#efe9d9;border:1px solid #e0d3b8;border-radius:7px}
+#brazilRoute .route-heading{font-size:10px;letter-spacing:.17em;color:#76674e;margin-bottom:12px}
+#brazilRoute .route-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+#brazilRoute button{min-width:0;border:0;background:transparent;color:#625e52;display:flex;align-items:center;flex-direction:column;gap:7px;padding:3px 0;font-size:10px;line-height:1.2}
+#brazilRoute button .route-dot{display:grid;place-items:center;width:27px;height:27px;border:1px solid #b8a98b;border-radius:50%;font-size:11px;background:#fbf7eb}
+#brazilRoute button.active .route-dot{background:#28513a;color:white;border-color:#28513a}
+#brazilRoute button.active{font-weight:bold;color:#234532}
+/* Asymmetric, editorial photo layout with restrained metadata */
+#photos.editorial-photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#photos.editorial-photos a{display:block;position:relative;grid-column:auto;overflow:hidden;background:#e6dfcf;border-radius:3px}
+#photos.editorial-photos a:first-child{grid-column:span 2}
+#photos.editorial-photos a img,#photos.editorial-photos a:first-child img{height:158px;width:100%;object-fit:cover;border-radius:3px;transition:transform .3s ease}
+#photos.editorial-photos a:first-child img{height:245px}
+#photos.editorial-photos a:hover img{transform:scale(1.035)}
+#photos.editorial-photos a::after{content:attr(data-photo);position:absolute;bottom:9px;left:9px;background:#142d26c9;color:#fff;font:10px Arial,sans-serif;letter-spacing:.12em;padding:6px 8px}
+#photos.editorial-photos a:nth-child(4){grid-column:span 2}
+#photos.editorial-photos a:nth-child(4) img{height:200px}
+#chapter .gallery-heading{font:normal 21px Georgia,serif;margin:22px 0 11px;padding-top:15px;border-top:1px solid #d8ccb5}
+@media(max-width:650px){.country-page.brazil-editorial{grid-template-columns:1fr;gap:8px}.country-page.brazil-editorial .country-art{min-height:235px;border-width:5px}.country-page.brazil-editorial .country-art::after{font-size:27px;top:15px}.country-page.brazil-editorial #countryShape{height:115px;margin-top:70px}.country-page.brazil-editorial .country-art .poster-footer{bottom:9px;font-size:9px}#photos.editorial-photos a:first-child img{height:195px}#photos.editorial-photos a:nth-child(4) img{height:160px}#photos.editorial-photos a img{height:115px}#brazilRoute{padding:12px 7px}#brazilRoute button{font-size:9px}}
 </style>
 </head>
 <body>
@@ -114,10 +143,10 @@
 <p>Four friends. Four countries. One unforgettable trip.<br>Explore the places we visited, one chapter at a time.</p>
 <button id="firstStop">Explore the first stop →</button>
 </div></section>
-<section id="countryReveal" role="dialog" aria-modal="true" aria-label="Country introduction" aria-hidden="true"><div class="country-page"><button id="skipCountry" type="button">Skip introduction ×</button><div class="country-art"><svg id="countryShape" role="img" aria-label="Country silhouette filled with national flag" viewBox="0 0 300 360" preserveAspectRatio="xMidYMid meet"></svg></div><div class="country-copy"><div class="country-eyebrow" id="countryChapter">CHAPTER I · SOUTH AMERICA</div><h2 id="countryName">Brazil</h2><p id="countrySubtitle"></p><div id="countryStops"></div><div class="country-stamp"><span id="stampName">BRASIL</span><small>2026 · ENTRY</small><small>✦ ✦ ✦</small></div><button id="enterCountry" type="button">ENTER BRAZIL →</button></div></div></section>
+<section id="countryReveal" role="dialog" aria-modal="true" aria-label="Country introduction" aria-hidden="true"><div class="country-page"><button id="skipCountry" type="button">Skip introduction ×</button><div class="country-art"><span class="poster-footer">SÃO PAULO · RIO · ILHA GRANDE · PORTO ALEGRE</span><svg id="countryShape" role="img" aria-label="Country silhouette filled with national flag" viewBox="0 0 300 360" preserveAspectRatio="xMidYMid meet"></svg></div><div class="country-copy"><div class="country-eyebrow" id="countryChapter">CHAPTER I · SOUTH AMERICA</div><h2 id="countryName">Brazil</h2><p id="countrySubtitle"></p><div id="countryStops"></div><div class="country-stamp"><span id="stampName">BRASIL</span><small>2026 · ENTRY</small><small>✦ ✦ ✦</small></div><button id="enterCountry" type="button">ENTER BRAZIL →</button></div></div></section>
 <div id="topbar"><button id="home">← Cover</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
 <div id="travelStatus" role="status" aria-live="polite"></div>
-<article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><button id="launchSlides" type="button" style="display:none">▶ View full-screen photo journal</button><div id="photos"></div><p id="photoNote"></p></article>
+<article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="brazilRoute" aria-label="Brazil journey stops"><div class="route-heading">BRAZIL · OUR ROUTE</div><div class="route-items"></div></div><button id="launchSlides" type="button" style="display:none">▶ View full-screen photo journal</button><h3 id="galleryHeading" class="gallery-heading" style="display:none">Postcards from the road</h3><div id="photos"></div><p id="photoNote"></p></article>
 <div id="bottom"><button id="prev">← Previous</button><div id="progress"><span>OUR JOURNEY</span><strong id="progressLabel">01 / 18</strong></div><button id="next">Next stop →</button></div>
 </main>
 
@@ -203,6 +232,7 @@ function drawCountryFlag(name){
 }
 function openCountryReveal(target){
  const name=journeyCountry(target),info=countryInfo[name];pendingCountryStop=target;
+ document.querySelector('.country-page').classList.toggle('brazil-editorial',name==='Brazil');
  document.getElementById('countryChapter').textContent=`CHAPTER ${info.chapter} · SOUTH AMERICA`;
  document.getElementById('countryName').textContent=name;
  document.getElementById('countrySubtitle').textContent=info.subtitle;
@@ -241,7 +271,14 @@ let active=0,travelling=false,vehicle=null,segment=null,completedSegments=[],ani
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function setControls(busy){travelling=busy;document.getElementById('next').disabled=busy||active===destinations.length-1;document.getElementById('prev').disabled=busy||active===0;select.disabled=busy;document.getElementById('progressLabel').textContent=`${String(active+1).padStart(2,'0')} / ${destinations.length}`;}
 function updatePins(){destinations.forEach((p,i)=>{const el=document.getElementById('pin-'+i);if(el)el.classList.toggle('active',i===active)})}
-function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=photoUrl(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Use the arrows or keyboard to explore the photo journal.':'More photographs and memories coming soon.';document.getElementById('launchSlides').style.display=files.length?'block':'none';chapter.style.display='block';status.style.display='none';setControls(false);updatePins();}
+function renderBrazilRoute(i){
+ const el=document.getElementById('brazilRoute');el.style.display=i>=0&&i<=3?'block':'none';
+ if(i>3)return;
+ const names=['São Paulo','Rio','Ilha Grande','Porto Alegre'];
+ el.querySelector('.route-items').innerHTML=names.map((name,j)=>`<button type="button" data-stop="${j}" class="${j===i?'active':''}" ${j===i?'aria-current="step"':''}><span class="route-dot">${j+1}</span><span>${name}</span></button>`).join('');
+}
+document.getElementById('brazilRoute').addEventListener('click',event=>{const button=event.target.closest('button[data-stop]');if(button)jumpTo(Number(button.dataset.stop))});
+function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=photoUrl(f);return `<a href="${src}" target="_blank" rel="noopener" data-photo="PHOTO ${String(j+1).padStart(2,'0')}"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');renderBrazilRoute(i);document.getElementById('photos').classList.toggle('editorial-photos',i<=3);document.getElementById('galleryHeading').style.display=files.length?'block':'none';document.getElementById('photoNote').textContent=files.length?'Use the arrows or keyboard to explore the photo journal.':'More photographs and memories coming soon.';document.getElementById('launchSlides').style.display=files.length?'block':'none';chapter.style.display='block';status.style.display='none';setControls(false);updatePins();}
 function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
 function showStop(i){const p=destinations[i];active=i;updatePins();select.value=String(i);map.setView(point(p),9,{animate:false});showChapter(i)}
 function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
