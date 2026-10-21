@@ -128,6 +128,36 @@
 #photos.editorial-photos a:nth-child(4) img{height:200px}
 #chapter .gallery-heading{font:normal 21px Georgia,serif;margin:22px 0 11px;padding-top:15px;border-top:1px solid #d8ccb5}
 @media(max-width:650px){.country-page.brazil-editorial{grid-template-columns:1fr;gap:8px}.country-page.brazil-editorial .country-art{min-height:235px;border-width:5px}.country-page.brazil-editorial .country-art::after{font-size:27px;top:15px}.country-page.brazil-editorial #countryShape{height:115px;margin-top:70px}.country-page.brazil-editorial .country-art .poster-footer{bottom:9px;font-size:9px}#photos.editorial-photos a:first-child img{height:195px}#photos.editorial-photos a:nth-child(4) img{height:160px}#photos.editorial-photos a img{height:115px}#brazilRoute{padding:12px 7px}#brazilRoute button{font-size:9px}}
+
+/* Refined antique-map paper treatment — replaces flat brown edging. */
+:root{--parchment:#f4ead3;--parchment-edge:#d7c6a0}
+#cover .cover-portrait{
+  box-shadow:-5px 0 0 #c5b48f,-10px 0 0 #eee2c7,
+    5px 6px 0 #f4e9d0,10px 11px 0 #d9c9a8,19px 23px 48px #0009;
+}
+#cover .cover-portrait .aged-photo{border:5px solid #f0e4c9;background-clip:padding-box}
+.country-page,.country-page.brazil-editorial,.intro-card{
+  background-color:#f5ecd8;
+  background-image:radial-gradient(ellipse at 17% 12%,#fffaf0b8,transparent 53%),
+    radial-gradient(ellipse at 87% 89%,#c5aa7740,transparent 52%),
+    repeating-linear-gradient(8deg,transparent 0 5px,#927c5210 6px 7px,transparent 8px 16px);
+  border:8px solid #e9dcc0;
+  outline:1px solid #bca87f;
+  outline-offset:-14px;
+}
+.country-page.brazil-editorial .country-art{
+  border:8px solid #eee3cc;
+  box-shadow:0 0 0 1px #cbb88f,inset 0 0 0 1px #e7d8b6;
+}
+/* Let the photograph speak for itself: no lettering over the poster. */
+.country-page.brazil-editorial .country-art::after,
+.country-page.brazil-editorial .country-art .poster-footer{display:none!important}
+.country-page.brazil-editorial .country-art::before{
+  background:linear-gradient(180deg,#102f2417,transparent 50%,#102f2417),url('rio-01.jpeg') center/cover;
+  filter:sepia(.13) saturate(.92);
+}
+.country-page.brazil-editorial #countryShape{opacity:.92}
+@media(max-width:700px){#cover .cover-portrait{box-shadow:-4px 0 0 #c5b48f,-7px 0 0 #eee2c7,5px 6px 0 #f4e9d0,10px 12px 26px #0008}.country-page,.country-page.brazil-editorial{border-width:5px;outline-offset:-10px}}
 </style>
 </head>
 <body>
