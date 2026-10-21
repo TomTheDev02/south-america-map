@@ -158,6 +158,36 @@
 }
 .country-page.brazil-editorial #countryShape{opacity:.92}
 @media(max-width:700px){#cover .cover-portrait{box-shadow:-4px 0 0 #c5b48f,-7px 0 0 #eee2c7,5px 6px 0 #f4e9d0,10px 12px 26px #0008}.country-page,.country-page.brazil-editorial{border-width:5px;outline-offset:-10px}}
+
+/* Vintage illustrated journey ticket — no animated Leaflet markers */
+#travelTicket{position:fixed;inset:0;z-index:1500;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(19,30,24,.69);backdrop-filter:blur(3px)}
+#travelTicket.visible{display:flex}
+.ticket-paper{position:relative;width:min(850px,95vw);padding:28px 38px 23px;color:#332d20;background:
+radial-gradient(ellipse at 12% 8%,#fff9e5a8,transparent 55%),
+repeating-linear-gradient(25deg,#8a693b08 0 1px,transparent 1px 6px),
+linear-gradient(120deg,#e8d5ad,#f9efd8 38%,#e7d2a7);
+border:7px double #94734b;outline:2px solid #e7d0a0;outline-offset:-15px;
+box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7% 0,100% 3%,100% 97%,98.5% 100%,1% 100%,0 97%)}
+.ticket-head,.ticket-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font:12px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#70593c}
+.ticket-head{border-bottom:1px solid #b69b6d;padding-bottom:13px}
+.ticket-route{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;margin:24px 0 8px}
+.ticket-route>div:last-child{text-align:right}
+.ticket-kicker{font:10px Arial,sans-serif;letter-spacing:.18em;color:#786247}
+.ticket-place{font:normal clamp(22px,3.8vw,36px)/1.12 Georgia,serif;margin-top:6px;color:#2c3528}
+.ticket-art{position:relative;height:190px;overflow:hidden;border-bottom:1px solid #b69b6d;margin-bottom:16px}
+.ticket-art svg{position:absolute;inset:0;width:100%;height:100%}
+.ticket-vehicle{position:absolute;top:52%;left:4%;transform:translate(-50%,-50%);font-size:42px;filter:drop-shadow(1px 3px 1px #5946277a);animation:ticketMove 2.15s ease-in-out forwards;will-change:left}
+.ticket-vehicle.boat{font-size:46px}
+.ticket-vehicle.combo{animation:ticketMove 2.15s ease-in-out forwards}
+.ticket-vehicle .second-vehicle{display:none}
+.ticket-foot{font-size:11px}
+.ticket-skip{position:absolute;right:22px;top:20px;background:#f8edcf;border:1px solid #92724c;border-radius:3px;color:#4b3e2b;padding:6px 9px;font:11px Arial,sans-serif;cursor:pointer;z-index:2}
+.ticket-progress{height:3px;background:#c5b18b;margin-top:17px;overflow:hidden}
+.ticket-progress:before{content:"";display:block;height:100%;background:#355e42;animation:ticketFill 2.25s linear forwards}
+@keyframes ticketMove{0%{left:8%}48%{left:45%}100%{left:89%}}
+@keyframes ticketFill{from{width:0}to{width:100%}}
+@media(max-width:600px){.ticket-paper{padding:35px 17px 20px}.ticket-head,.ticket-foot{font-size:9px;letter-spacing:.04em}.ticket-route{gap:7px}.ticket-place{font-size:21px}.ticket-art{height:155px}.ticket-vehicle{font-size:34px}.ticket-skip{top:10px;right:12px}}
+@media(prefers-reduced-motion:reduce){.ticket-vehicle,.ticket-progress:before{animation:none}.ticket-vehicle{left:80%}.ticket-progress:before{width:100%}}
 </style>
 </head>
 <body>
@@ -201,6 +231,27 @@
 <div id="captionMessage" role="status" aria-live="polite"></div>
 </div>
 <button id="slideNext" class="slide-arrow" aria-label="Next photograph">›</button>
+</div>
+
+<div id="travelTicket" role="dialog" aria-modal="true" aria-label="Vintage journey ticket" aria-hidden="true">
+ <div class="ticket-paper">
+  <button id="ticketSkip" class="ticket-skip" type="button">Skip →</button>
+  <div class="ticket-head"><span>SOUTH AMERICA TRAVEL CO.</span><span id="ticketChapter">BRAZIL · CHAPTER 02</span></div>
+  <div class="ticket-route"><div><div class="ticket-kicker">DEPARTURE</div><div class="ticket-place" id="ticketFrom"></div></div><span style="font-size:25px;color:#9b7b50">→</span><div><div class="ticket-kicker">DESTINATION</div><div class="ticket-place" id="ticketTo"></div></div></div>
+  <div class="ticket-art">
+   <svg viewBox="0 0 760 190" preserveAspectRatio="none" aria-hidden="true">
+    <g stroke="#7e8b6d" stroke-width="1.4" fill="none" opacity=".7"><path d="M0 141 Q120 125 220 140 T430 135 T760 135"/><path d="M0 150 Q140 140 250 148 T500 143 T760 145"/></g>
+    <g fill="#63785e" opacity=".55"><path d="M0 146L22 115 44 146 65 98 93 146 121 120 144 146 175 103 204 146 240 121 265 146 0 146Z"/><path d="M470 147L495 120 517 147 550 104 579 147 616 117 640 147 681 105 717 147 760 121 760 147Z"/></g>
+    <g fill="#816e52" opacity=".65"><path d="M0 151V105H13V78H24V111H37V93H54V62H69V151ZM710 151V101H723V83H735V58H743V89H755V151Z"/></g>
+    <g stroke="#6b6549" stroke-width="2" stroke-dasharray="5 7" fill="none"><path d="M36 159Q380 150 723 159"/></g>
+    <g fill="#3d5c42"><circle cx="35" cy="159" r="5"/><circle cx="725" cy="159" r="5"/></g>
+    <g stroke="#b79b70" fill="none" opacity=".6"><circle cx="380" cy="75" r="44"/><path d="M380 24V126M329 75H431M349 44L411 106M411 44L349 106"/></g>
+   </svg>
+   <div id="ticketVehicle" class="ticket-vehicle" aria-hidden="true">🚌</div>
+  </div>
+  <div class="ticket-foot"><span id="ticketMode">BUS JOURNEY</span><span id="ticketRecord">TRAVEL RECORD NO. 002</span></div>
+  <div class="ticket-progress"></div>
+ </div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -312,18 +363,47 @@ function showChapter(i){const p=destinations[i];active=i;select.value=String(i);
 function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
 function showStop(i){const p=destinations[i];active=i;updatePins();select.value=String(i);map.setView(point(p),9,{animate:false});showChapter(i)}
 function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
+// One brief CSS-only ticket transition. The map itself never animates a vehicle.
+let ticketTimer=null,ticketDestination=null;
+const ticketOverlay=document.getElementById('travelTicket');
+function closeTicket(continueJourney=true){
+ if(ticketTimer!==null){clearTimeout(ticketTimer);ticketTimer=null;}
+ const target=ticketDestination;ticketDestination=null;
+ ticketOverlay.classList.remove('visible');ticketOverlay.setAttribute('aria-hidden','true');
+ if(!continueJourney||target===null)return;
+ if(journeyCountry(active)!==journeyCountry(target))openCountryReveal(target);
+ else showStop(target);
+}
+function showTravelTicket(target){
+ const from=destinations[active],to=destinations[target];
+ ticketDestination=target;
+ document.getElementById('ticketFrom').textContent=from.name;
+ document.getElementById('ticketTo').textContent=to.name;
+ document.getElementById('ticketChapter').textContent=journeyCountry(target).toUpperCase()+' · CHAPTER '+String(target+1).padStart(2,'0');
+ document.getElementById('ticketRecord').textContent='TRAVEL RECORD NO. '+String(target+1).padStart(3,'0');
+ const boat=from.name==='Rio de Janeiro'&&to.name==='Ilha Grande'||from.name==='Ilha Grande'&&to.name==='Rio de Janeiro';
+ const leavingIsland=from.name==='Ilha Grande'&&to.name==='Porto Alegre';
+ const flying=to.mode==='plane';
+ document.getElementById('ticketMode').textContent=boat?'ROAD TRANSFER · FERRY CROSSING':leavingIsland?'FERRY · ONWARD ROAD JOURNEY':flying?'FLIGHT':to.mode==='walk'?'ON FOOT':'BUS JOURNEY';
+ const vehicle=document.getElementById('ticketVehicle');
+ vehicle.textContent=boat||leavingIsland?'⛴️':flying?'✈️':to.mode==='walk'?'🥾':'🚌';
+ // Restart animation by replacing only the tiny moving element, not redrawing the map.
+ vehicle.style.animation='none';void vehicle.offsetWidth;vehicle.style.animation='';
+ ticketOverlay.classList.add('visible');ticketOverlay.setAttribute('aria-hidden','false');
+ const progress=ticketOverlay.querySelector('.ticket-progress');
+ progress.replaceWith(progress.cloneNode(true));
+ document.getElementById('ticketSkip').focus();
+ ticketTimer=setTimeout(()=>closeTicket(true),reducedMotion?450:2350);
+}
+document.getElementById('ticketSkip').onclick=()=>closeTicket(true);
 function moveTo(target){
-  if(target<0||target>=destinations.length||target===active)return;
-  const from=destinations[active],to=destinations[target];
-  clearAnimation();
-  // Show the completed leg as a static route, without animating a vehicle.
-  if(Math.abs(target-active)===1){
-    completedSegments.push(L.polyline([point(from),point(to)],{
-      color:'#ad7741',weight:3,dashArray:'7 8',opacity:.8
-    }).addTo(map));
-  }
-  if(journeyCountry(active)!==journeyCountry(target))openCountryReveal(target);
-  else showStop(target,false);
+ if(target<0||target>=destinations.length||target===active||ticketDestination!==null)return;
+ const from=destinations[active],to=destinations[target];
+ clearAnimation();
+ if(Math.abs(target-active)===1){
+  completedSegments.push(L.polyline([point(from),point(to)],{color:'#ad7741',weight:3,dashArray:'7 8',opacity:.8}).addTo(map));
+ }
+ showTravelTicket(target);
 }
 const cover=document.getElementById('cover');
 const overview=document.getElementById('continentIntro');
@@ -351,7 +431,7 @@ document.getElementById('firstStop').onclick=()=>{
   document.getElementById('bottom').style.display='flex';
   openCountryReveal(0);
 };
-document.getElementById('home').onclick=()=>{pendingCountryStop=null;countryReveal.classList.remove('visible');if(countryOutlineLayer){map.removeLayer(countryOutlineLayer);countryOutlineLayer=null;}clearAnimation();chapter.style.display='none';overview.classList.remove('visible');document.getElementById('experience').style.display='none';cover.classList.remove('turning');cover.style.display='flex';setControls(false)};
+document.getElementById('home').onclick=()=>{closeTicket(false);pendingCountryStop=null;countryReveal.classList.remove('visible');if(countryOutlineLayer){map.removeLayer(countryOutlineLayer);countryOutlineLayer=null;}clearAnimation();chapter.style.display='none';overview.classList.remove('visible');document.getElementById('experience').style.display='none';cover.classList.remove('turning');cover.style.display='flex';setControls(false)};
 document.getElementById('close').onclick=()=>{chapter.style.display='none'};
 document.getElementById('next').onclick=()=>moveTo(active+1);
 document.getElementById('prev').onclick=()=>moveTo(active-1);
