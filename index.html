@@ -122,7 +122,10 @@ const destinations=[
 ];
 const saoPauloPhotos=['WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg','WhatsApp Image 2026-10-15 at 18.39.37.jpeg'];
 const rioPhotos=["rio-01.jpeg", "rio-02.jpeg", "rio-03.jpeg", "rio-04.jpeg", "rio-05.jpeg", "rio-06.jpeg", "rio-07.jpeg", "rio-08.jpeg"];
-const photosByStop={0:saoPauloPhotos,1:rioPhotos}; // Add arrays for other stops here.
+const ilhaGrandePhotos=Array.from({length:8},(_,i)=>`ilha-grande/ilha-grande-${String(i+1).padStart(2,'0')}.jpg`);
+const portoAlegrePhotos=Array.from({length:8},(_,i)=>`porto-alegre/porto-alegre-${String(i+1).padStart(2,'0')}.jpg`);
+const photosByStop={0:saoPauloPhotos,1:rioPhotos,2:ilhaGrandePhotos,3:portoAlegrePhotos};
+const photoUrl=filename=>filename.split('/').map(encodeURIComponent).join('/');
 const map=L.map('map',{zoomControl:false,preferCanvas:true}).setView([-20,-60],4);
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors',maxZoom:19}).addTo(map);
@@ -135,7 +138,7 @@ let active=0,travelling=false,vehicle=null,segment=null,completedSegments=[],ani
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function setControls(busy){travelling=busy;document.getElementById('next').disabled=busy||active===destinations.length-1;document.getElementById('prev').disabled=busy||active===0;select.disabled=busy;document.getElementById('progressLabel').textContent=`${String(active+1).padStart(2,'0')} / ${destinations.length}`;}
 function updatePins(){destinations.forEach((p,i)=>{const el=document.getElementById('pin-'+i);if(el)el.classList.toggle('active',i===active)})}
-function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=encodeURIComponent(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Use the arrows or keyboard to explore the photo journal.':'More photographs and memories coming soon.';document.getElementById('launchSlides').style.display=files.length?'block':'none';chapter.style.display='block';status.style.display='none';setControls(false);updatePins();}
+function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=photoUrl(f);return `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}"></a>`}).join('');document.getElementById('photoNote').textContent=files.length?'Use the arrows or keyboard to explore the photo journal.':'More photographs and memories coming soon.';document.getElementById('launchSlides').style.display=files.length?'block':'none';chapter.style.display='block';status.style.display='none';setControls(false);updatePins();}
 function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
 function showStop(i){const p=destinations[i];active=i;updatePins();select.value=String(i);map.setView(point(p),9,{animate:false});showChapter(i)}
 function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
@@ -191,7 +194,7 @@ const slideImage=document.getElementById('slideImage');
 let slideshowReturnFocus=null;
 function showSlide(){
   if(!slidePhotos.length)return;
-  slideImage.src=encodeURIComponent(slidePhotos[slideIndex]);
+  slideImage.src=photoUrl(slidePhotos[slideIndex]);
   slideImage.alt=`${slidePlace} photograph ${slideIndex+1}`;
   document.getElementById('slideTitle').textContent=slidePlace;
   document.getElementById('slideCounter').textContent=`${String(slideIndex+1).padStart(2,'0')} / ${String(slidePhotos.length).padStart(2,'0')}`;
