@@ -176,24 +176,50 @@ box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7
 .ticket-place{font:normal clamp(22px,3.8vw,36px)/1.12 Georgia,serif;margin-top:6px;color:#2c3528}
 .ticket-art{position:relative;height:190px;overflow:hidden;border-bottom:1px solid #b69b6d;margin-bottom:16px}
 .ticket-art svg{position:absolute;inset:0;width:100%;height:100%}
-.ticket-vehicle{position:absolute;top:52%;left:4%;transform:translate(-50%,-50%);font-size:42px;filter:drop-shadow(1px 3px 1px #5946277a);animation:ticketMove 2.15s ease-in-out forwards;will-change:left}
+.ticket-vehicle{position:absolute;top:52%;left:4%;transform:translate(-50%,-50%);font-size:42px;filter:drop-shadow(1px 3px 1px #5946277a);animation:ticketMove 4.8s ease-in-out forwards;will-change:left}
 .ticket-vehicle.boat{font-size:46px}
-.ticket-vehicle.combo{animation:ticketMove 2.15s ease-in-out forwards}
+.ticket-vehicle.combo{animation:ticketMove 4.8s ease-in-out forwards}
 .ticket-vehicle .second-vehicle{display:none}
 .ticket-foot{font-size:11px}
 .ticket-skip{position:absolute;right:22px;top:20px;background:#f8edcf;border:1px solid #92724c;border-radius:3px;color:#4b3e2b;padding:6px 9px;font:11px Arial,sans-serif;cursor:pointer;z-index:2}
 .ticket-progress{height:3px;background:#c5b18b;margin-top:17px;overflow:hidden}
-.ticket-progress:before{content:"";display:block;height:100%;background:#355e42;animation:ticketFill 2.25s linear forwards}
+.ticket-progress:before{content:"";display:block;height:100%;background:#355e42;animation:ticketFill 5s linear forwards}
 @keyframes ticketMove{0%{left:8%}48%{left:45%}100%{left:89%}}
 @keyframes ticketFill{from{width:0}to{width:100%}}
 @media(max-width:600px){.ticket-paper{padding:35px 17px 20px}.ticket-head,.ticket-foot{font-size:9px;letter-spacing:.04em}.ticket-route{gap:7px}.ticket-place{font-size:21px}.ticket-art{height:155px}.ticket-vehicle{font-size:34px}.ticket-skip{top:10px;right:12px}}
 @media(prefers-reduced-motion:reduce){.ticket-vehicle,.ticket-progress:before{animation:none}.ticket-vehicle{left:80%}.ticket-progress:before{width:100%}}
+
+/* Illustrated antique atlas cover background: replaces photographic collage. */
+#cover{background:#e9dec5;isolation:isolate}
+#cover .cover-atlas{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:
+ radial-gradient(ellipse at 48% 40%,#f9f1df 0%,#e7d9b8 68%,#bca57e 100%)}
+#cover .cover-atlas:after{content:"";position:absolute;inset:0;background:
+ repeating-linear-gradient(13deg,transparent 0 8px,#826e4b0b 9px 10px,transparent 11px 21px),
+ radial-gradient(ellipse at center,transparent 30%,#7c63424f 100%)}
+#cover .cover-atlas svg{width:100%;height:100%;display:block}
+#cover:before{background:radial-gradient(ellipse at center,transparent 22%,#3f382a50 100%)}
+#cover.turning{background:#e9dec5}
+#cover.turning .cover-atlas{opacity:0;transition:opacity .85s ease}
+#cover .cover-portrait{box-shadow:-6px 0 0 #857354,-11px 0 0 #d5c5a1,5px 6px 0 #f7ecd4,11px 12px 0 #d3c09a,22px 27px 58px #392e24a6}
+#cover .cover-portrait .aged-photo{border:6px solid #e9d9b6;background-clip:padding-box}
+@media(max-width:700px){#cover .cover-atlas svg{width:150%;max-width:none;transform:translateX(-17%)}#cover .cover-portrait{box-shadow:-4px 0 0 #857354,-8px 0 0 #d5c5a1,5px 6px 0 #f7ecd4,11px 13px 30px #392e24a6}}
 </style>
 </head>
 <body>
-<section id="cover"><div class="cover-collage" aria-hidden="true">
-<img src="rio-01.jpeg" alt=""><img src="rio-03.jpeg" alt=""><img src="rio-05.jpeg" alt=""><img src="rio-07.jpeg" alt="">
-<img src="rio-02.jpeg" alt=""><img src="rio-04.jpeg" alt=""><img src="rio-06.jpeg" alt=""><img src="rio-08.jpeg" alt="">
+<section id="cover"><div class="cover-atlas" aria-hidden="true">
+ <svg viewBox="0 0 1200 850" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+ <defs><pattern id="atlasGrid" width="75" height="75" patternUnits="userSpaceOnUse"><path d="M75 0H0V75" fill="none" stroke="#8f947b" stroke-width=".7" opacity=".35"/></pattern><filter id="inkSoft"><feGaussianBlur stdDeviation=".45"/></filter></defs>
+ <rect width="1200" height="850" fill="url(#atlasGrid)"/>
+ <g stroke="#657d70" stroke-width="1.1" fill="none" opacity=".35"><path d="M0 155Q600 105 1200 155M0 320Q600 275 1200 320M0 510Q600 465 1200 510M0 695Q600 655 1200 695"/><path d="M180 0Q140 420 180 850M390 0Q360 420 390 850M800 0Q830 420 800 850M1010 0Q1060 420 1010 850"/></g>
+ <!-- Hand-inked South America silhouette; intentionally faded behind the book -->
+ <g transform="translate(490 45) rotate(-7 240 330)" fill="#9eac8a" stroke="#576c58" stroke-width="3" opacity=".62" filter="url(#inkSoft)">
+ <path d="M115 65 L160 43 215 55 256 28 294 51 326 40 375 73 411 92 441 125 472 149 454 183 480 214 462 241 439 262 433 305 414 332 396 370 390 413 365 453 354 492 339 529 311 556 295 604 276 639 258 679 238 719 217 750 202 718 207 679 196 645 188 608 167 575 157 536 143 509 136 470 115 444 99 414 96 379 82 350 75 317 59 294 48 261 40 225 60 196 73 170 68 140 86 109 100 84 Z"/>
+ <path d="M104 93Q191 167 167 270T208 465T240 705M300 62Q271 177 323 298T300 538" fill="none" stroke="#e7e1c6" stroke-width="1.3" opacity=".6"/>
+ </g>
+ <g fill="none" stroke="#7c7659" opacity=".65" transform="translate(170 520)"><circle r="61" stroke-width="2"/><circle r="47" stroke-width="1"/><path d="M0-79V79M-79 0H79M-55-55L55 55M55-55L-55 55"/><path d="M0-68L9-9 0 0-9-9Z M68 0L9 9 0 0 9-9Z M0 68L-9 9 0 0 9 9Z M-68 0L-9-9 0 0-9 9Z" fill="#7c7659"/></g>
+ <g fill="#706b51" font-family="Georgia,serif" letter-spacing="5" opacity=".62"><text x="85" y="125" font-size="25">ATLANTIC OCEAN</text><text x="800" y="745" font-size="22">SOUTH AMERICA</text><text x="190" y="445" font-size="14" letter-spacing="3">PACIFIC</text><text x="190" y="468" font-size="14" letter-spacing="3">OCEAN</text></g>
+ <path d="M65 63H1135V787H65Z" stroke="#947e58" stroke-width="2" fill="none" opacity=".55"/>
+ </svg>
 </div><div class="cover-portrait"><div class="aged-photo" aria-hidden="true"></div><div class="cover-content"><div><h1>Our South America Trip</h1><div class="year">2026</div></div><button id="start">Start the Trek →</button></div></div></section>
 <main id="experience">
 <div id="map" aria-label="Interactive map of our South America trip"></div>
@@ -393,7 +419,7 @@ function showTravelTicket(target){
  const progress=ticketOverlay.querySelector('.ticket-progress');
  progress.replaceWith(progress.cloneNode(true));
  document.getElementById('ticketSkip').focus();
- ticketTimer=setTimeout(()=>closeTicket(true),reducedMotion?450:2350);
+ ticketTimer=setTimeout(()=>closeTicket(true),reducedMotion?450:5000);
 }
 document.getElementById('ticketSkip').onclick=()=>closeTicket(true);
 function moveTo(target){
