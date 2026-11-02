@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Our South America Trip</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--ink:#1d3529;--paper:#f8f5ec;--gold:#d6b989}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:var(--ink);background:#e7e3d9}button,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:wait}
+#cover{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;padding:22px;background:#e7e3d9;color:#fff;text-align:center}.cover-portrait{position:relative;height:min(93dvh,920px);width:min(74vh,540px);max-width:100%;overflow:hidden;background:#203629 url('cover.jpeg') center/cover no-repeat;box-shadow:0 18px 65px #19251e45}.cover-portrait:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#091c13a6,transparent 43%,transparent 52%,#091c13b8)}.cover-portrait:after{content:'';position:absolute;inset:15px;border:1px solid #ffffffc9;pointer-events:none}.cover-content{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(50px,7vh,80px) 30px}#cover h1{font:normal clamp(34px,5vh,53px)/1.1 Georgia,serif;letter-spacing:.035em;text-shadow:0 2px 12px #0009;margin:0}.year{font-size:11px;letter-spacing:.35em;margin-top:12px}#start{border:1px solid #fff9ec;background:#fff9ec;color:#1e3b2b;padding:15px 27px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}#start:hover{background:white}
+#experience{display:none;position:fixed;inset:0}#map{position:absolute;inset:0;background:#dce6dd}#topbar{position:absolute;z-index:600;left:16px;right:16px;top:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}#topbar>*{pointer-events:auto}#home,#destSelect{background:#fffdf7;border:1px solid #ddd4bf;padding:12px 15px;border-radius:6px;color:var(--ink);box-shadow:0 2px 12px #0002}#destSelect{max-width:53vw}
+#chapter{position:absolute;z-index:550;right:16px;top:76px;bottom:92px;width:min(410px,calc(100vw - 32px));overflow:auto;background:var(--paper);box-shadow:0 12px 42px #0004;border-radius:10px;padding:25px;display:none}#chapter h2{font:normal clamp(29px,3vw,38px) Georgia,serif;margin:5px 0 14px}#chapter .country{letter-spacing:.17em;text-transform:uppercase;font-size:11px;color:#83765f}#chapter p{line-height:1.7;font-size:15px}#photos{display:grid;grid-template-columns:1fr 1fr;gap:8px}#photos img{width:100%;height:145px;object-fit:cover;border-radius:5px;display:block}#photos a:first-child{grid-column:span 2}#photos a:first-child img{height:205px}#photoNote{font-size:12px;color:#6b6b64}#close{float:right;background:transparent;border:0;font-size:25px;color:var(--ink)}
+#bottom{position:absolute;z-index:620;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:#fffdf7;padding:9px;border-radius:10px;box-shadow:0 6px 24px #0003;max-width:calc(100vw - 28px)}#bottom button{white-space:nowrap;padding:12px 15px;border:0;border-radius:6px;background:var(--ink);color:white}#bottom button:hover:not(:disabled){background:#37634b}#progress{font-size:12px;white-space:nowrap;text-align:center;min-width:98px}#progress strong{display:block;font-size:13px;margin-top:3px}#travelStatus{position:absolute;z-index:540;left:50%;transform:translateX(-50%);top:78px;background:#1c392bf2;color:white;padding:11px 18px;border-radius:8px;display:none;font-size:13px;text-align:center;box-shadow:0 3px 15px #0003;max-width:90vw}
+.place-label{display:inline-block;white-space:nowrap;background:#1f5037;color:#fff;border:2px solid #fff;border-radius:6px;padding:7px 10px;font:bold 12px Arial,sans-serif;box-shadow:0 2px 9px #0006}.place-label.active{background:#a45f2b}.vehicle-icon{font-size:30px;line-height:36px;text-align:center;filter:drop-shadow(0 2px 3px #0008)}
+@media(max-width:700px){#cover{padding:0;background:#1e3529}.cover-portrait{width:100%;height:100dvh;max-height:none;box-shadow:none}.cover-content{padding:64px 28px}#chapter{left:0;right:0;top:auto;bottom:78px;width:100%;max-height:49dvh;border-radius:12px 12px 0 0;padding:19px}#chapter h2{font-size:29px}#photos img{height:110px}#photos a:first-child img{height:155px}#topbar{top:9px;left:9px;right:9px}#bottom{bottom:8px;gap:5px;padding:6px}#bottom button{padding:12px 10px;font-size:12px}#progress{min-width:72px;font-size:10px}#progress strong{font-size:11px}#travelStatus{top:67px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* Vintage journal cover and lightweight page-turn transition */
+#cover{perspective:1800px;background:rgba(22,34,27,.94);transition:background .9s ease}
+.cover-portrait{transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;transition:transform 1.15s cubic-bezier(.2,.7,.22,1),box-shadow 1.15s ease;z-index:2;border-radius:3px 13px 13px 3px;box-shadow:9px 12px 0 #b5a27f,14px 18px 45px #0008}
+.cover-portrait::before{z-index:0;background:linear-gradient(180deg,#241c15a8,transparent 43%,#20180d45 65%,#19160fc7)}
+.cover-portrait::after{border:2px solid #e7d9b0;inset:15px;z-index:1}
+.cover-portrait .aged-photo{position:absolute;inset:0;background:url('cover.jpeg') center/cover no-repeat;filter:sepia(.35) saturate(.76) contrast(.94) brightness(.87);z-index:0}
+.cover-content{z-index:3}
+#cover.turning{background:transparent;pointer-events:none}
+#cover.turning .cover-portrait{transform:rotateY(-112deg);box-shadow:0 8px 25px #0004}
+#cover h1{text-transform:uppercase;font-size:clamp(30px,4.7vh,49px);letter-spacing:.06em}
+#continentIntro{position:absolute;z-index:800;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;background:linear-gradient(90deg,rgba(18,36,27,.18),transparent 50%)}
+#continentIntro.visible{display:flex}
+.intro-card{pointer-events:auto;text-align:center;background:rgba(250,245,230,.96);border:1px solid #c7b48d;outline:1px solid #c7b48d;outline-offset:-10px;padding:35px 36px 30px;box-shadow:0 12px 50px #0005;max-width:min(88vw,410px)}
+.intro-card .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#856e49}
+.intro-card h2{font:normal clamp(30px,5vw,43px)/1.12 Georgia,serif;margin:16px 0 12px}
+.intro-card p{font:15px/1.6 Georgia,serif;margin:0 0 23px}
+#firstStop{padding:13px 20px;border:0;background:#254632;color:#fff;font-size:13px;letter-spacing:.04em}
+#firstStop:hover{background:#3d6248}
+@media(max-width:700px){.cover-portrait{box-shadow:none}.intro-card{padding:29px 23px}}
+@media(prefers-reduced-motion:reduce){.cover-portrait{transition:none}}
+
+/* Photographic collage behind the portrait journal */
+#cover{background:#292b23;isolation:isolate;perspective:1800px;overflow:hidden}
+.cover-collage{position:absolute;inset:-24px;z-index:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:9px;transform:rotate(-3deg) scale(1.10);pointer-events:none}
+.cover-collage img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.87) brightness(.77);box-shadow:0 4px 20px #0006}
+#cover::before{content:'';position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,rgba(17,25,20,.14) 5%,rgba(17,25,20,.55) 100%);pointer-events:none}
+/* Keep the book tall and prominent, with a subtle spine and page edges */
+#cover .cover-portrait{z-index:2;position:relative;flex:none;width:min(74vh,540px);height:min(93dvh,920px);max-width:calc(100vw - 52px);overflow:visible;border:0;outline:0;border-radius:3px 12px 12px 3px;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;box-shadow:-8px 0 0 #56462f,-12px 0 0 #bba785,8px 8px 0 #dfd0ae,14px 15px 0 #a99a7c,23px 28px 55px #000b;transition:transform 1.15s cubic-bezier(.2,.7,.22,1),box-shadow 1.15s ease;background:#26362a}
+#cover .cover-portrait .aged-photo{position:absolute;inset:0;z-index:0;background:url('cover.jpeg') center/cover no-repeat;filter:none;border-radius:3px 12px 12px 3px}
+#cover .cover-portrait::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(7,19,14,.64),transparent 32%,transparent 55%,rgba(7,19,14,.68));border-radius:3px 12px 12px 3px;pointer-events:none}
+#cover .cover-portrait::after{display:none!important}
+#cover .cover-content{position:relative;z-index:3}
+#cover.turning{background:#292b23;pointer-events:none}
+#cover.turning .cover-portrait{transform:rotateY(-112deg);box-shadow:0 8px 25px #0004}
+#cover.turning .cover-collage{opacity:0;transition:opacity .7s ease}
+#cover.turning::before{opacity:0;transition:opacity .7s ease}
+@media(max-width:700px){#cover{padding:12px}.cover-collage{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:7px}.cover-collage img{filter:saturate(.8) brightness(.63)}#cover .cover-portrait{width:min(85vw,440px);height:min(85dvh,740px);max-width:calc(100vw - 45px);box-shadow:-5px 0 0 #56462f,-8px 0 0 #bba785,6px 8px 0 #dfd0ae,11px 13px 28px #0009}}
+@media(prefers-reduced-motion:reduce){#cover .cover-portrait{transition:none}}
+
+
+/* Destination photo journal launch button */
+#launchSlides{display:block;width:100%;margin:16px 0 18px;padding:14px 16px;border:0;border-radius:6px;background:#254632;color:#fff;font-weight:700;letter-spacing:.03em}
+#launchSlides:hover{background:#3d6248}
+/* Immersive in-page photo slideshow */
+#slideshow{position:fixed;inset:0;z-index:5000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(11,18,15,.98);color:#f8f5ec;padding:60px 72px 36px;text-align:center}
+#slideshow.open{display:flex}
+#slideImage{display:block;max-width:100%;max-height:calc(100dvh - 190px);width:auto;height:auto;object-fit:contain;border-radius:4px;box-shadow:0 15px 50px #0009}
+#slideTitle{font:normal clamp(22px,3vw,30px) Georgia,serif;margin-top:7px}
+#slideCounter{font-size:12px;letter-spacing:.18em;color:#c3c7c0}
+#slideCaption{font:italic 15px/1.5 Georgia,serif;max-width:720px;min-height:22px;white-space:pre-wrap}
+#editCaptionButton{background:transparent;color:#d6b989;border:1px solid #d6b989;border-radius:5px;padding:8px 14px;cursor:pointer}
+#captionEditor{display:none;width:min(100%,650px);background:#f8f5ec;color:#1d3529;padding:13px;border-radius:8px;text-align:left}
+#captionEditor textarea{width:100%;min-height:76px;padding:9px;resize:vertical;font:14px Arial,sans-serif}
+#captionEditor input{width:100%;padding:9px;margin:5px 0 9px;font:14px Arial,sans-serif}
+#captionEditor button{background:#254632;color:#fff;border:0;padding:10px 12px;border-radius:5px;margin:5px 5px 0 0}
+#captionMessage{font-size:12px;line-height:1.4;min-height:15px}
+#slideshow.editing{overflow-y:auto;justify-content:flex-start}
+#slideshow.editing #slideImage{max-height:45dvh}
+#slideshow:not(.editing) #slideImage{max-height:calc(100dvh - 235px)}
+@media(max-width:700px){#slideCaption{font-size:13px}#slideshow{gap:9px}}
+.slide-arrow{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:62px;border:1px solid #ffffff55;border-radius:5px;background:#ffffff20;color:white;font-size:32px;cursor:pointer}
+.slide-arrow:hover,.slide-arrow:focus-visible{background:#ffffff44}
+#slidePrev{left:14px}#slideNext{right:14px}
+#slideClose{position:absolute;top:14px;right:20px;border:0;background:transparent;color:white;font-size:34px;cursor:pointer}
+#photos a{cursor:zoom-in}
+@media(max-width:700px){#slideshow{padding:58px 48px 30px}#slideImage{max-height:calc(100dvh - 170px)}.slide-arrow{width:36px;height:54px}#slidePrev{left:5px}#slideNext{right:5px}}
+
+/* Country chapter reveals — illustrated flag silhouette and passport stamp */
+#countryReveal{position:absolute;inset:0;z-index:850;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(17,32,25,.64);backdrop-filter:blur(3px)}
+#countryReveal.visible{display:flex}
+.country-page{position:relative;width:min(94vw,810px);max-height:94dvh;overflow-y:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;background:#f5efdf;border:1px solid #c6ae7d;padding:35px 38px;box-shadow:0 24px 90px #0008;outline:1px solid #c6ae7d;outline-offset:-10px}
+.country-art{display:flex;align-items:center;justify-content:center;min-height:270px;background:radial-gradient(ellipse at center,#e9ddc2 0%,#f5efdf 70%)}
+#countryShape{width:100%;max-height:350px;overflow:visible;filter:drop-shadow(3px 8px 4px #493a2540)}
+.country-eyebrow{font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#816f52}
+#countryName{font:normal clamp(39px,5vw,65px)/1.1 Georgia,serif;margin:13px 0 8px;color:#243b2e}
+#countrySubtitle{font:italic 17px/1.5 Georgia,serif;color:#746345;margin:0 0 18px}
+#countryStops{font:12px/1.9 Arial,sans-serif;color:#6a6659;margin:10px 0 24px}
+.country-stamp{display:inline-flex;align-items:center;justify-content:center;flex-direction:column;border:3px double #a45e40;color:#a45e40;border-radius:50%;width:112px;height:112px;transform:rotate(-13deg);font:bold 13px/1.5 Georgia,serif;letter-spacing:.12em;text-align:center;opacity:.9;animation:stampIn .65s .25s both}
+.country-stamp small{font-size:10px;letter-spacing:.08em}
+#enterCountry{display:block;margin-top:23px;border:0;background:#254632;color:#fff;padding:14px 23px;font:bold 12px Arial,sans-serif;letter-spacing:.09em}
+#enterCountry:hover{background:#3d6248}
+#skipCountry{position:absolute;right:20px;top:19px;border:0;background:transparent;color:#6a6659;font-size:12px;text-decoration:underline}
+@keyframes stampIn{from{opacity:0;transform:rotate(-13deg) scale(1.6)}to{opacity:.9;transform:rotate(-13deg) scale(1)}}
+@media(max-width:650px){.country-page{grid-template-columns:1fr;gap:4px;padding:35px 25px 25px}.country-art{min-height:145px}#countryShape{max-height:190px}.country-stamp{width:83px;height:83px;font-size:10px;float:right;margin-top:-15px}#countryName{font-size:40px}#countryStops{margin-bottom:12px}#enterCountry{margin-top:14px}}
+@media(prefers-reduced-motion:reduce){.country-stamp{animation:none}}
+
+/* Brazil editorial refresh — vintage travel-poster opening */
+.country-page.brazil-editorial{width:min(94vw,920px);grid-template-columns:1.05fr 1fr;gap:30px;background:#f5edda}
+.country-page.brazil-editorial .country-art{position:relative;min-height:480px;overflow:hidden;background:#284d3c;border:10px solid #efe2c4;box-shadow:inset 0 0 0 2px #c8ac72}
+.country-page.brazil-editorial .country-art::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#143b32b0 0%,transparent 35%,#143b32a6 100%),url('rio-01.jpeg') center/cover;filter:sepia(.22) saturate(.85);transform:scale(1.02)}
+.country-page.brazil-editorial .country-art::after{content:'BRASIL\A A JOURNEY THROUGH BRAZIL';white-space:pre;position:absolute;z-index:2;left:0;right:0;top:26px;text-align:center;color:#f8e9bd;font:normal clamp(31px,4.2vw,54px)/1.22 Georgia,serif;letter-spacing:.09em;text-shadow:0 2px 12px #09251c}
+.country-page.brazil-editorial #countryShape{position:relative;z-index:1;width:40%;height:190px;margin-top:170px;opacity:.85;filter:drop-shadow(2px 3px 8px #001a12)}
+.country-page.brazil-editorial .country-art .poster-footer{display:block;position:absolute;z-index:2;bottom:20px;left:0;right:0;color:#f7e8c4;font:12px Georgia,serif;letter-spacing:.18em;text-align:center;text-shadow:0 2px 5px #142d24}
+.country-art .poster-footer{display:none}
+/* Four-stop progress tracker */
+#brazilRoute{display:none;margin:18px 0 20px;padding:15px 12px;background:#efe9d9;border:1px solid #e0d3b8;border-radius:7px}
+#brazilRoute .route-heading{font-size:10px;letter-spacing:.17em;color:#76674e;margin-bottom:12px}
+#brazilRoute .route-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+#brazilRoute button{min-width:0;border:0;background:transparent;color:#625e52;display:flex;align-items:center;flex-direction:column;gap:7px;padding:3px 0;font-size:10px;line-height:1.2}
+#brazilRoute button .route-dot{display:grid;place-items:center;width:27px;height:27px;border:1px solid #b8a98b;border-radius:50%;font-size:11px;background:#fbf7eb}
+#brazilRoute button.active .route-dot{background:#28513a;color:white;border-color:#28513a}
+#brazilRoute button.active{font-weight:bold;color:#234532}
+/* Asymmetric, editorial photo layout with restrained metadata */
+#photos.editorial-photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#photos.editorial-photos a{display:block;position:relative;grid-column:auto;overflow:hidden;background:#e6dfcf;border-radius:3px}
+#photos.editorial-photos a:first-child{grid-column:span 2}
+#photos.editorial-photos a img,#photos.editorial-photos a:first-child img{height:158px;width:100%;object-fit:cover;border-radius:3px;transition:transform .3s ease}
+#photos.editorial-photos a:first-child img{height:245px}
+#photos.editorial-photos a:hover img{transform:scale(1.035)}
+#photos.editorial-photos a::after{content:attr(data-photo);position:absolute;bottom:9px;left:9px;background:#142d26c9;color:#fff;font:10px Arial,sans-serif;letter-spacing:.12em;padding:6px 8px}
+#photos.editorial-photos a:nth-child(4){grid-column:span 2}
+#photos.editorial-photos a:nth-child(4) img{height:200px}
+#chapter .gallery-heading{font:normal 21px Georgia,serif;margin:22px 0 11px;padding-top:15px;border-top:1px solid #d8ccb5}
+@media(max-width:650px){.country-page.brazil-editorial{grid-template-columns:1fr;gap:8px}.country-page.brazil-editorial .country-art{min-height:235px;border-width:5px}.country-page.brazil-editorial .country-art::after{font-size:27px;top:15px}.country-page.brazil-editorial #countryShape{height:115px;margin-top:70px}.country-page.brazil-editorial .country-art .poster-footer{bottom:9px;font-size:9px}#photos.editorial-photos a:first-child img{height:195px}#photos.editorial-photos a:nth-child(4) img{height:160px}#photos.editorial-photos a img{height:115px}#brazilRoute{padding:12px 7px}#brazilRoute button{font-size:9px}}
+
+/* Refined antique-map paper treatment — replaces flat brown edging. */
+:root{--parchment:#f4ead3;--parchment-edge:#d7c6a0}
+#cover .cover-portrait{
+  box-shadow:-5px 0 0 #c5b48f,-10px 0 0 #eee2c7,
+    5px 6px 0 #f4e9d0,10px 11px 0 #d9c9a8,19px 23px 48px #0009;
+}
+#cover .cover-portrait .aged-photo{border:5px solid #f0e4c9;background-clip:padding-box}
+.country-page,.country-page.brazil-editorial,.intro-card{
+  background-color:#f5ecd8;
+  background-image:radial-gradient(ellipse at 17% 12%,#fffaf0b8,transparent 53%),
+    radial-gradient(ellipse at 87% 89%,#c5aa7740,transparent 52%),
+    repeating-linear-gradient(8deg,transparent 0 5px,#927c5210 6px 7px,transparent 8px 16px);
+  border:8px solid #e9dcc0;
+  outline:1px solid #bca87f;
+  outline-offset:-14px;
+}
+.country-page.brazil-editorial .country-art{
+  border:8px solid #eee3cc;
+  box-shadow:0 0 0 1px #cbb88f,inset 0 0 0 1px #e7d8b6;
+}
+/* Let the photograph speak for itself: no lettering over the poster. */
+.country-page.brazil-editorial .country-art::after,
+.country-page.brazil-editorial .country-art .poster-footer{display:none!important}
+.country-page.brazil-editorial .country-art::before{
+  background:linear-gradient(180deg,#102f2417,transparent 50%,#102f2417),url('rio-01.jpeg') center/cover;
+  filter:sepia(.13) saturate(.92);
+}
+.country-page.brazil-editorial #countryShape{opacity:.92}
+@media(max-width:700px){#cover .cover-portrait{box-shadow:-4px 0 0 #c5b48f,-7px 0 0 #eee2c7,5px 6px 0 #f4e9d0,10px 12px 26px #0008}.country-page,.country-page.brazil-editorial{border-width:5px;outline-offset:-10px}}
+
+/* Vintage illustrated journey ticket — no animated Leaflet markers */
+#travelTicket{position:fixed;inset:0;z-index:1500;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(19,30,24,.69);backdrop-filter:blur(3px)}
+#travelTicket.visible{display:flex}
+.ticket-paper{position:relative;width:min(850px,95vw);padding:28px 38px 23px;color:#332d20;background:
+radial-gradient(ellipse at 12% 8%,#fff9e5a8,transparent 55%),
+repeating-linear-gradient(25deg,#8a693b08 0 1px,transparent 1px 6px),
+linear-gradient(120deg,#e8d5ad,#f9efd8 38%,#e7d2a7);
+border:7px double #94734b;outline:2px solid #e7d0a0;outline-offset:-15px;
+box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7% 0,100% 3%,100% 97%,98.5% 100%,1% 100%,0 97%)}
+.ticket-head,.ticket-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font:12px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#70593c}
+.ticket-head{border-bottom:1px solid #b69b6d;padding-bottom:13px}
+.ticket-route{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;margin:24px 0 8px}
+.ticket-route>div:last-child{text-align:right}
+.ticket-kicker{font:10px Arial,sans-serif;letter-spacing:.18em;color:#786247}
+.ticket-place{font:normal clamp(22px,3.8vw,36px)/1.12 Georgia,serif;margin-top:6px;color:#2c3528}
+.ticket-art{position:relative;height:190px;overflow:hidden;border-bottom:1px solid #b69b6d;margin-bottom:16px}
+.ticket-art svg{position:absolute;inset:0;width:100%;height:100%}
+.ticket-vehicle{position:absolute;top:52%;left:4%;transform:translate(-50%,-50%);font-size:42px;filter:drop-shadow(1px 3px 1px #5946277a);animation:ticketMove 4.8s ease-in-out forwards;will-change:left}
+.ticket-vehicle.boat{font-size:46px}
+.ticket-vehicle.combo{animation:ticketMove 4.8s ease-in-out forwards}
+.ticket-vehicle .second-vehicle{display:none}
+.ticket-foot{font-size:11px}
+.ticket-skip{position:absolute;right:22px;top:20px;background:#f8edcf;border:1px solid #92724c;border-radius:3px;color:#4b3e2b;padding:6px 9px;font:11px Arial,sans-serif;cursor:pointer;z-index:2}
+.ticket-progress{height:3px;background:#c5b18b;margin-top:17px;overflow:hidden}
+.ticket-progress:before{content:"";display:block;height:100%;background:#355e42;animation:ticketFill 5s linear forwards}
+@keyframes ticketMove{0%{left:8%}48%{left:45%}100%{left:89%}}
+@keyframes ticketFill{from{width:0}to{width:100%}}
+@media(max-width:600px){.ticket-paper{padding:35px 17px 20px}.ticket-head,.ticket-foot{font-size:9px;letter-spacing:.04em}.ticket-route{gap:7px}.ticket-place{font-size:21px}.ticket-art{height:155px}.ticket-vehicle{font-size:34px}.ticket-skip{top:10px;right:12px}}
+@media(prefers-reduced-motion:reduce){.ticket-vehicle,.ticket-progress:before{animation:none}.ticket-vehicle{left:80%}.ticket-progress:before{width:100%}}
+
+/* Illustrated antique atlas cover background: replaces photographic collage. */
+#cover{background:#e9dec5;isolation:isolate}
+#cover .cover-atlas{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:
+ radial-gradient(ellipse at 48% 40%,#f9f1df 0%,#e7d9b8 68%,#bca57e 100%)}
+#cover .cover-atlas:after{content:"";position:absolute;inset:0;background:
+ repeating-linear-gradient(13deg,transparent 0 8px,#826e4b0b 9px 10px,transparent 11px 21px),
+ radial-gradient(ellipse at center,transparent 30%,#7c63424f 100%)}
+#cover .cover-atlas svg{width:100%;height:100%;display:block}
+#cover:before{background:radial-gradient(ellipse at center,transparent 22%,#3f382a50 100%)}
+#cover.turning{background:#e9dec5}
+#cover.turning .cover-atlas{opacity:0;transition:opacity .85s ease}
+#cover .cover-portrait{box-shadow:-6px 0 0 #857354,-11px 0 0 #d5c5a1,5px 6px 0 #f7ecd4,11px 12px 0 #d3c09a,22px 27px 58px #392e24a6}
+#cover .cover-portrait .aged-photo{border:6px solid #e9d9b6;background-clip:padding-box}
+@media(max-width:700px){#cover .cover-atlas svg{width:150%;max-width:none;transform:translateX(-17%)}#cover .cover-portrait{box-shadow:-4px 0 0 #857354,-8px 0 0 #d5c5a1,5px 6px 0 #f7ecd4,11px 13px 30px #392e24a6}}
+
+/* THE JOURNEY TIMELINE — full-screen open-book atlas */
+#timelineView{position:fixed;inset:0;z-index:1200;display:none;overflow-y:auto;background:#ded0ad;color:#283a2e;padding:30px clamp(12px,3vw,52px);background-image:radial-gradient(ellipse at center,#f4e7c9 0%,#d0b88c 100%)}
+#timelineView.visible{display:block}
+.timeline-book{max-width:1450px;min-height:calc(100vh - 60px);margin:auto;display:grid;grid-template-columns:minmax(270px,34%) 1fr;position:relative;background:#f3e6c9;box-shadow:0 16px 55px #392b1c65,0 0 0 9px #ad946a;outline:1px solid #786345;outline-offset:5px}
+.timeline-book:before{content:"";position:absolute;left:34%;top:0;bottom:0;width:15px;z-index:3;pointer-events:none;background:linear-gradient(90deg,#6e553e55,transparent 50%,#6e553e33)}
+.timeline-left{position:sticky;top:0;align-self:start;min-height:calc(100vh - 60px);padding:34px clamp(18px,3vw,44px);border-right:1px solid #b7a17d;background:linear-gradient(100deg,#e7d4ac,#f2e3c3 70%,#dbc59c);display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden}
+.timeline-left:after,.timeline-right:after{content:"";position:absolute;inset:12px;border:1px solid #9b815652;pointer-events:none}
+.timeline-mini-map{width:min(100%,260px);height:250px;opacity:.75;margin:12px auto 6px}
+.timeline-left h2{font:normal clamp(30px,3.2vw,48px)/1.1 Georgia,serif;text-transform:uppercase;letter-spacing:.07em;margin:10px 0 18px}
+.timeline-left p{font:italic 16px/1.6 Georgia,serif;max-width:290px}
+.timeline-ornament{font:30px Georgia,serif;color:#977b52}
+.timeline-facts{margin-top:auto;width:100%;padding:17px;border:1px solid #a48b65;text-align:left;font:15px/1.9 Georgia,serif;background:#f5e8cc88}
+.timeline-facts div{display:flex;gap:12px}
+.timeline-right{position:relative;padding:26px clamp(18px,3.5vw,55px) 55px;background:repeating-linear-gradient(0deg,#9a805308 0 1px,transparent 1px 7px),#f5e9d0}
+.timeline-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:17px;border-bottom:1px solid #b8a07b;margin-bottom:18px}
+.timeline-top h3{font:normal 21px Georgia,serif;margin:0}
+.timeline-close{background:#2d4c39;color:#fff;border:0;padding:10px 16px;position:relative;z-index:5}
+.timeline-filter{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:17px}
+.timeline-filter button{border:1px solid #b6a17c;background:transparent;color:#4e4938;padding:7px 11px;font:12px Georgia,serif;cursor:pointer}
+.timeline-filter button.active{background:#30553d;color:#fff;border-color:#30553d}
+.timeline-list{position:relative;padding-left:0}
+.timeline-list:before{content:"";position:absolute;left:113px;top:12px;bottom:30px;width:2px;background:#4d704e}
+.timeline-entry{position:relative;display:grid;grid-template-columns:100px 22px minmax(0,1fr);gap:13px;align-items:center;border-bottom:1px solid #bfa98477;padding:17px 0;min-height:140px}
+.timeline-date{text-align:right;font:13px Georgia,serif;color:#725e42}
+.timeline-dot{width:14px;height:14px;border:3px solid #31513b;border-radius:50%;background:#f2e3c4;z-index:1;margin-left:5px}
+.timeline-visit{display:grid;grid-template-columns:minmax(120px,38%) 1fr 20px;gap:20px;align-items:center;width:100%;border:0;background:transparent;text-align:left;padding:0;color:inherit;cursor:pointer}
+.timeline-visit:hover .timeline-name{text-decoration:underline;text-underline-offset:4px}
+.timeline-visit img{width:100%;height:132px;object-fit:cover;border:6px solid #f9f1df;box-shadow:0 3px 10px #614e3470;transform:rotate(-1deg);background:#e4d6b8}
+.timeline-placeholder{height:132px;display:flex;align-items:center;justify-content:center;border:6px solid #f9f1df;background:#e0d2b2;color:#8b7755;font:italic 15px Georgia,serif}
+.timeline-name{font:normal clamp(18px,2.3vw,28px) Georgia,serif;text-transform:uppercase;letter-spacing:.035em;color:#2d4934}
+.timeline-country{font:11px Georgia,serif;letter-spacing:.18em;margin:6px 0 10px}
+.timeline-desc{font:14px/1.55 Georgia,serif;max-width:420px}
+.timeline-arrow{font:25px Georgia,serif}
+#timelineButton,#timelineFromIntro{border:1px solid #ddd4bf;background:#fffdf7;color:#1d3529;padding:12px 15px;border-radius:6px;box-shadow:0 2px 12px #0002}
+#timelineFromIntro{margin:10px 0 0;display:block;width:100%}
+@media(max-width:850px){.timeline-book{grid-template-columns:1fr}.timeline-book:before{display:none}.timeline-left{position:relative;min-height:0;padding:24px 20px}.timeline-mini-map{height:130px;width:130px;margin:0}.timeline-left h2{font-size:30px;margin:0 0 7px}.timeline-left p{font-size:13px;margin:0}.timeline-facts{margin-top:14px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap;padding:9px}.timeline-facts div{font-size:12px}.timeline-right{padding:20px 17px}.timeline-visit{grid-template-columns:110px 1fr 15px;gap:10px}.timeline-visit img,.timeline-placeholder{height:95px}.timeline-entry{grid-template-columns:57px 18px minmax(0,1fr);gap:7px}.timeline-list:before{left:64px}.timeline-date{font-size:11px}.timeline-name{font-size:17px}.timeline-desc{font-size:12px}.timeline-country{font-size:10px}.timeline-dot{width:12px;height:12px;margin-left:2px}}
+
+/* Illustrated artwork edition: real art assets, not just parchment-colored CSS. */
+#timelineView{background:#30281d;padding:0;scrollbar-color:#a98d61 #30281d}
+.timeline-book{max-width:1672px;width:100%;min-height:100vh;margin:auto;background-image:url('timeline_illustrated_book.webp');background-position:center top;background-size:100% 100%;background-repeat:no-repeat;box-shadow:0 0 65px #0008;outline:none;grid-template-columns:38% 62%}
+.timeline-book:before{left:38%;width:12px;background:linear-gradient(90deg,#4b301b40,transparent 55%,#4b301b1c)}
+.timeline-left{min-height:100vh;position:sticky;top:0;padding:95px 32px 65px;background:transparent;border:0;justify-content:flex-start}
+.timeline-left:after,.timeline-right:after{display:none}
+.timeline-engraving{width:min(72%,280px);height:34vh;max-height:320px;object-fit:contain;object-position:top;mix-blend-mode:multiply;opacity:.88;margin:0 auto 12px;filter:sepia(.25)}
+.timeline-left h2{font-size:clamp(29px,3vw,44px);margin:0 0 12px;letter-spacing:.045em;color:#302b1e;text-shadow:0 1px #f3e2be}
+.timeline-left p{font-size:16px;line-height:1.5}
+.timeline-ornament{font-size:20px}
+.timeline-facts{margin-top:auto;background:#e9d2a766;border:2px double #9d7951;box-shadow:inset 0 0 12px #876a3222;padding:12px 20px;width:min(100%,340px)}
+.timeline-right{padding:93px 6.2% 70px 5.5%;background:transparent}
+.timeline-top{border-bottom:1px solid #b39469;padding-bottom:10px;margin-bottom:16px}
+.timeline-top h3{font-style:italic;font-size:24px}
+.timeline-close{font:13px Georgia,serif;background:#e5d0a9;border:1px solid #8c6945;color:#44351f;cursor:pointer}
+.timeline-filter{justify-content:center;gap:9px;margin:0 0 18px}
+.timeline-filter button{font:14px Georgia,serif;background:#e8d4ad;border:1px solid #ab8758;padding:8px 15px;box-shadow:0 2px 3px #75532b25}
+.timeline-filter button.active{background:#304c32;color:#fff}
+.timeline-list:before{left:110px;background:#32563a}
+.timeline-entry{grid-template-columns:97px 23px minmax(0,1fr);gap:11px;padding:11px 0;min-height:132px}
+.timeline-date{background:#e6cda1;border:1px solid #b9935f;box-shadow:1px 2px 3px #76522e40;text-align:center;padding:12px 5px;transform:rotate(-1.4deg);font-size:13px;color:#453b2c}
+.timeline-dot{background:#e7d1a7;border:3px solid #31513b}
+.timeline-visit{grid-template-columns:minmax(130px,37%) 1fr 22px;gap:20px}
+.timeline-visit img{height:126px;transform:rotate(-1.1deg);border:6px solid #f4e4c3;box-shadow:2px 4px 9px #5b3b1c66;filter:saturate(.9) sepia(.08)}
+.timeline-name{font-size:clamp(19px,2.15vw,28px);font-weight:normal}
+.timeline-country{letter-spacing:.14em}
+.timeline-desc{font-size:14px}
+@media(max-width:850px){
+ #timelineView{background:#d5b68a}
+ .timeline-book{display:block;min-height:100vh;background-image:none;background:#e9d1a7;box-shadow:none}
+ .timeline-book:before{display:none}
+ .timeline-left{position:relative;min-height:0;padding:26px 20px 15px;background:linear-gradient(110deg,#ead4ae,#f0dfbb);border-bottom:5px double #b28e60}
+ .timeline-engraving{height:150px;width:145px;margin:0 auto 5px}
+ .timeline-left h2{font-size:30px}
+ .timeline-left p{font-size:13px}
+ .timeline-facts{margin-top:10px}
+ .timeline-right{padding:20px 18px 50px;background:linear-gradient(120deg,#efdfbd,#ead1a6)}
+ .timeline-entry{grid-template-columns:57px 17px minmax(0,1fr);gap:7px}
+ .timeline-list:before{left:64px}
+ .timeline-visit{grid-template-columns:100px 1fr 15px;gap:9px}
+ .timeline-visit img{height:90px;border-width:4px}
+ .timeline-date{font-size:10px;padding:8px 3px}
+ .timeline-name{font-size:17px}
+ .timeline-desc{font-size:12px}
+}
+
+/* Unified illustrated atlas — cover, interactive map, destination journal */
+#cover{background:#36291d url('vintage_atlas_backdrop.webp') center/cover no-repeat}
+#cover .cover-atlas{opacity:.12;mix-blend-mode:multiply}
+#cover:before{background:radial-gradient(ellipse at center,#241b1055,#160f0ba6)}
+#cover .cover-portrait{border:8px ridge #9c7445;outline:2px solid #d4b580;outline-offset:-18px;box-shadow:-9px 0 0 #4c311c,-15px 0 0 #8a6038,10px 11px 0 #b99560,25px 27px 60px #000b}
+#cover .cover-portrait .aged-photo{border:0;filter:sepia(.2) saturate(.8)}
+#cover .cover-content{background:linear-gradient(180deg,#23180e90,transparent 35%,transparent 55%,#20150eae)}
+#start{font:14px Georgia,serif;letter-spacing:.1em;text-transform:none;background:#e7d0a4;color:#342919;border:2px double #78552d;box-shadow:0 3px 10px #0005}
+#experience{background:#c9af7f}
+#map{background:#dbc7a3!important}
+#map .leaflet-tile-pane{filter:sepia(.74) saturate(.56) contrast(.88) brightness(1.05)}
+#map:after{content:"";position:absolute;inset:10px;z-index:410;pointer-events:none;border:3px double #866944;box-shadow:inset 0 0 42px #80623e48}
+#map:before{content:"";position:absolute;inset:0;z-index:400;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,#6d4c2c40)}
+.leaflet-control-zoom a{background:#e8d3a8!important;color:#43311d!important;border-color:#93724b!important;font-family:Georgia,serif!important}
+.leaflet-control-attribution{background:#ead9b7cc!important;color:#584b34!important}
+.place-label{font-family:Georgia,serif!important;color:#283b2b!important;background:#f2e2c3!important;border:1px solid #7e6b4a!important;border-radius:2px!important;box-shadow:2px 3px 5px #49351f50!important}
+#topbar,#bottom{background:#ead5ac!important;border:2px double #91734c!important;border-radius:3px!important;box-shadow:0 4px 18px #30211565!important}
+#topbar button,#bottom button,#destSelect,#timelineButton{font-family:Georgia,serif!important;border-radius:2px!important}
+#chapter{background:#f0dfbb!important;color:#322b20!important;border:8px ridge #9e8056!important;outline:2px solid #e5d1a6;outline-offset:-14px;border-radius:2px!important;box-shadow:0 12px 38px #20140766,inset 0 0 36px #9e7b412b!important}
+#chapter h2,#placeName{color:#2b4933!important;font-family:Georgia,serif!important}
+#chapter p,#chapter .country{font-family:Georgia,serif!important}
+#photos img{border:5px solid #f7ecd5!important;box-shadow:2px 3px 8px #4b321b55!important;border-radius:1px!important;object-fit:cover}
+#photos a{min-width:0;overflow:hidden}
+#continentIntro .intro-card{background:#efdfbd!important;border:7px double #9b774b!important;border-radius:3px!important}
+.timeline-book{background-size:cover;background-position:center top}
+.timeline-visit img{object-fit:cover;max-width:100%}
+.timeline-visit,.timeline-visit>div{min-width:0}
+#atlasMapTitle{position:absolute;z-index:450;left:24px;bottom:104px;pointer-events:none;background:#efddbaeb;border:3px double #917148;padding:11px 16px;font:18px Georgia,serif;color:#314936;letter-spacing:.045em;box-shadow:0 3px 12px #0003}
+#atlasMapTitle span{display:block;font:9px Georgia,serif;letter-spacing:.16em;color:#6c563b;margin-top:4px}
+@media(max-width:850px){.timeline-book{background-image:none}#cover .cover-portrait{border-width:5px;outline-offset:-10px}#map:after{inset:5px;border-width:2px}#chapter{border-width:5px;outline-offset:-10px}}
+@media(max-width:700px){#atlasMapTitle{left:10px;bottom:85px;padding:7px 9px;font-size:11px}#atlasMapTitle span{font-size:7px}}
+
+/* FINAL TYPOGRAPHY AND IMAGE INTEGRITY */
+:root{--book-ink:#332d22;--book-green:#304936;--book-paper:#f0e1c1;--book-muted:#796247}
+#cover,#experience,#chapter,#timelineView,#countryReveal,#continentIntro,#travelTicket{font-family:Georgia,'Times New Roman',serif}
+#cover button,#experience button,#chapter button,#timelineView button,#countryReveal button,#continentIntro button,#travelTicket button,#destSelect{font-family:Georgia,'Times New Roman',serif!important;letter-spacing:.035em}
+#timelineView{font-family:Georgia,'Times New Roman',serif}
+.timeline-book{grid-template-columns:38% 62%}
+.timeline-left,.timeline-right{box-sizing:border-box}
+.timeline-left h2,.timeline-name,.timeline-top h3,#chapter h2,#placeName{font-family:Georgia,'Times New Roman',serif!important;font-weight:400}
+.timeline-visit{grid-template-columns:minmax(115px,36%) minmax(0,1fr) 20px;align-items:center;overflow:visible}
+.timeline-image-frame{width:100%;height:126px;position:relative;overflow:hidden;border:6px solid #f5e7ca;box-sizing:border-box;background:#ddc49a;box-shadow:2px 4px 9px #5b3b1c66;transform:rotate(-1deg)}
+.timeline-image-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transform:none!important;border:0!important;box-shadow:none!important;filter:sepia(.1) saturate(.83);display:block}
+.timeline-image-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;background:linear-gradient(145deg,#e9d6b2,#c9ae7c);color:#5e5039;font-size:12px;letter-spacing:.12em}
+.timeline-image-fallback[hidden]{display:none}
+.timeline-entry{min-width:0}
+.timeline-desc{overflow-wrap:break-word}
+#photos a.photo-missing{display:none!important}
+#photos img{max-width:100%;object-fit:cover}
+#timelineClose{white-space:nowrap}
+@media(max-width:850px){
+ .timeline-book{grid-template-columns:1fr}
+ .timeline-visit{grid-template-columns:minmax(85px,33%) minmax(0,1fr) 14px;gap:9px}
+ .timeline-image-frame{height:96px;border-width:4px}
+ .timeline-right{padding:20px 17px 55px}
+ .timeline-name{font-size:17px}
+ .timeline-desc{font-size:12px}
+}
+@media(max-width:390px){.timeline-top h3{font-size:17px}.timeline-close{font-size:11px;padding:8px}.timeline-visit{grid-template-columns:85px minmax(0,1fr) 12px}}
+</style>
+</head>
+<body>
+<section id="cover"><div class="cover-atlas" aria-hidden="true">
+ <svg viewBox="0 0 1200 850" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+ <defs><pattern id="atlasGrid" width="75" height="75" patternUnits="userSpaceOnUse"><path d="M75 0H0V75" fill="none" stroke="#8f947b" stroke-width=".7" opacity=".35"/></pattern><filter id="inkSoft"><feGaussianBlur stdDeviation=".45"/></filter></defs>
+ <rect width="1200" height="850" fill="url(#atlasGrid)"/>
+ <g stroke="#657d70" stroke-width="1.1" fill="none" opacity=".35"><path d="M0 155Q600 105 1200 155M0 320Q600 275 1200 320M0 510Q600 465 1200 510M0 695Q600 655 1200 695"/><path d="M180 0Q140 420 180 850M390 0Q360 420 390 850M800 0Q830 420 800 850M1010 0Q1060 420 1010 850"/></g>
+ <!-- Hand-inked South America silhouette; intentionally faded behind the book -->
+ <g transform="translate(490 45) rotate(-7 240 330)" fill="#9eac8a" stroke="#576c58" stroke-width="3" opacity=".62" filter="url(#inkSoft)">
+ <path d="M115 65 L160 43 215 55 256 28 294 51 326 40 375 73 411 92 441 125 472 149 454 183 480 214 462 241 439 262 433 305 414 332 396 370 390 413 365 453 354 492 339 529 311 556 295 604 276 639 258 679 238 719 217 750 202 718 207 679 196 645 188 608 167 575 157 536 143 509 136 470 115 444 99 414 96 379 82 350 75 317 59 294 48 261 40 225 60 196 73 170 68 140 86 109 100 84 Z"/>
+ <path d="M104 93Q191 167 167 270T208 465T240 705M300 62Q271 177 323 298T300 538" fill="none" stroke="#e7e1c6" stroke-width="1.3" opacity=".6"/>
+ </g>
+ <g fill="none" stroke="#7c7659" opacity=".65" transform="translate(170 520)"><circle r="61" stroke-width="2"/><circle r="47" stroke-width="1"/><path d="M0-79V79M-79 0H79M-55-55L55 55M55-55L-55 55"/><path d="M0-68L9-9 0 0-9-9Z M68 0L9 9 0 0 9-9Z M0 68L-9 9 0 0 9 9Z M-68 0L-9-9 0 0-9 9Z" fill="#7c7659"/></g>
+ <g fill="#706b51" font-family="Georgia,serif" letter-spacing="5" opacity=".62"><text x="85" y="125" font-size="25">ATLANTIC OCEAN</text><text x="800" y="745" font-size="22">SOUTH AMERICA</text><text x="190" y="445" font-size="14" letter-spacing="3">PACIFIC</text><text x="190" y="468" font-size="14" letter-spacing="3">OCEAN</text></g>
+ <path d="M65 63H1135V787H65Z" stroke="#947e58" stroke-width="2" fill="none" opacity=".55"/>
+ </svg>
+</div><div class="cover-portrait"><div class="aged-photo" aria-hidden="true"></div><div class="cover-content"><div><h1>Our South America Trip</h1><div class="year">2026</div></div><button id="start">Start the Trek →</button></div></div></section>
+<main id="experience">
+<div id="map" aria-label="Interactive map of our South America trip"></div><div id="atlasMapTitle" aria-hidden="true">THE SOUTH AMERICAN ATLAS <span>EST. MMXXVI · AN EXPEDITION IN FOUR CHAPTERS</span></div>
+<section id="continentIntro" aria-label="South America overview"><div class="intro-card">
+<div class="eyebrow">The adventure begins · 2026</div>
+<h2>South America</h2>
+<p>Four friends. Four countries. One unforgettable trip.<br>Explore the places we visited, one chapter at a time.</p>
+<button id="firstStop">Explore the first stop →</button><button id="timelineFromIntro" type="button">Browse the journey timeline →</button>
+</div></section>
+<section id="countryReveal" role="dialog" aria-modal="true" aria-label="Country introduction" aria-hidden="true"><div class="country-page"><button id="skipCountry" type="button">Skip introduction ×</button><div class="country-art"><span class="poster-footer">SÃO PAULO · RIO · ILHA GRANDE · PORTO ALEGRE</span><svg id="countryShape" role="img" aria-label="Country silhouette filled with national flag" viewBox="0 0 300 360" preserveAspectRatio="xMidYMid meet"></svg></div><div class="country-copy"><div class="country-eyebrow" id="countryChapter">CHAPTER I · SOUTH AMERICA</div><h2 id="countryName">Brazil</h2><p id="countrySubtitle"></p><div id="countryStops"></div><div class="country-stamp"><span id="stampName">BRASIL</span><small>2026 · ENTRY</small><small>✦ ✦ ✦</small></div><button id="enterCountry" type="button">ENTER BRAZIL →</button></div></div></section>
+<div id="topbar"><button id="home">← Cover</button><button id="timelineButton" type="button">Timeline</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
+<div id="travelStatus" role="status" aria-live="polite"></div>
+<article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="brazilRoute" aria-label="Brazil journey stops"><div class="route-heading">BRAZIL · OUR ROUTE</div><div class="route-items"></div></div><button id="launchSlides" type="button" style="display:none">▶ View full-screen photo journal</button><h3 id="galleryHeading" class="gallery-heading" style="display:none">Postcards from the road</h3><div id="photos"></div><p id="photoNote"></p></article>
+<div id="bottom"><button id="prev">← Previous</button><div id="progress"><span>OUR JOURNEY</span><strong id="progressLabel">01 / 18</strong></div><button id="next">Next stop →</button></div>
+</main>
+
+
+<section id="timelineView" role="dialog" aria-modal="true" aria-label="Journey timeline">
+ <div class="timeline-book">
+  <aside class="timeline-left">
+   <svg style="display:none" class="timeline-mini-map" viewBox="0 0 240 260" aria-hidden="true"><g fill="#8c997a" stroke="#536a55" stroke-width="2" opacity=".9"><path d="M64 15L100 7 130 22 151 18 181 37 209 58 198 88 214 105 189 134 177 167 160 192 144 220 128 251 116 228 119 197 99 170 92 143 71 117 61 91 40 68 51 42Z"/></g><path d="M87 52Q148 86 153 132T128 222" stroke="#f5e7c9" stroke-dasharray="4 5" stroke-width="3" fill="none"/><g stroke="#756a4f" fill="none"><circle cx="205" cy="206" r="25"/><path d="M205 173V239M172 206H238M183 184L227 228M227 184L183 228"/></g></svg>
+   <img class="timeline-engraving" src="timeline_south_america_engraving.webp" alt="Antique engraved South America map"><div class="timeline-ornament">✦</div>
+   <h2>The Journey<br>Timeline</h2>
+   <p>A chronological record of our travels through South America.</p>
+   <div class="timeline-facts"><div>◷ <span>April – June 2026</span></div><div>◇ <span>4 countries</span></div><div>⌖ <span>18 destinations</span></div></div>
+  </aside>
+  <div class="timeline-right">
+   <div class="timeline-top"><h3>Our South America Trip</h3><button id="timelineClose" class="timeline-close" type="button">← Return to map</button></div>
+   <nav class="timeline-filter" id="timelineFilters" aria-label="Filter destinations by country"></nav>
+   <div class="timeline-list" id="timelineList"></div>
+  </div>
+ </div>
+</section>
+
+<div id="slideshow" role="dialog" aria-modal="true" aria-label="Destination photo slideshow" aria-hidden="true">
+<button id="slideClose" aria-label="Close slideshow">×</button>
+<button id="slidePrev" class="slide-arrow" aria-label="Previous photograph">‹</button>
+<img id="slideImage" alt="Travel photograph">
+<div id="slideTitle"></div><div id="slideCounter" aria-live="polite"></div>
+<div id="slideCaption" aria-live="polite"></div>
+<button id="editCaptionButton" type="button" style="display:none">✎ Edit caption</button>
+<div id="captionEditor">
+<label for="captionText"><strong>Photo caption</strong></label>
+<textarea id="captionText" placeholder="Write the story behind this photograph..."></textarea>
+<details style="margin-top:10px"><summary>GitHub publishing settings</summary>
+<label for="githubRepo">Repository (owner/repository)</label>
+<input id="githubRepo" placeholder="your-username/south-america-map" autocomplete="off">
+<label for="githubToken">Fine-grained GitHub token (Contents: Read and write)</label>
+<input id="githubToken" type="password" placeholder="Paste token to publish; never added to the website" autocomplete="off">
+<small>Token stays in this browser tab's memory only. Never commit it to GitHub or share it.</small>
+</details>
+<div><button id="saveCaption" type="button">Save to GitHub</button><button id="cancelCaption" type="button">Cancel</button></div>
+<div id="captionMessage" role="status" aria-live="polite"></div>
+</div>
+<button id="slideNext" class="slide-arrow" aria-label="Next photograph">›</button>
+</div>
+
+<div id="travelTicket" role="dialog" aria-modal="true" aria-label="Vintage journey ticket" aria-hidden="true">
+ <div class="ticket-paper">
+  <button id="ticketSkip" class="ticket-skip" type="button">Skip →</button>
+  <div class="ticket-head"><span>SOUTH AMERICA TRAVEL CO.</span><span id="ticketChapter">BRAZIL · CHAPTER 02</span></div>
+  <div class="ticket-route"><div><div class="ticket-kicker">DEPARTURE</div><div class="ticket-place" id="ticketFrom"></div></div><span style="font-size:25px;color:#9b7b50">→</span><div><div class="ticket-kicker">DESTINATION</div><div class="ticket-place" id="ticketTo"></div></div></div>
+  <div class="ticket-art">
+   <svg viewBox="0 0 760 190" preserveAspectRatio="none" aria-hidden="true">
+    <g stroke="#7e8b6d" stroke-width="1.4" fill="none" opacity=".7"><path d="M0 141 Q120 125 220 140 T430 135 T760 135"/><path d="M0 150 Q140 140 250 148 T500 143 T760 145"/></g>
+    <g fill="#63785e" opacity=".55"><path d="M0 146L22 115 44 146 65 98 93 146 121 120 144 146 175 103 204 146 240 121 265 146 0 146Z"/><path d="M470 147L495 120 517 147 550 104 579 147 616 117 640 147 681 105 717 147 760 121 760 147Z"/></g>
+    <g fill="#816e52" opacity=".65"><path d="M0 151V105H13V78H24V111H37V93H54V62H69V151ZM710 151V101H723V83H735V58H743V89H755V151Z"/></g>
+    <g stroke="#6b6549" stroke-width="2" stroke-dasharray="5 7" fill="none"><path d="M36 159Q380 150 723 159"/></g>
+    <g fill="#3d5c42"><circle cx="35" cy="159" r="5"/><circle cx="725" cy="159" r="5"/></g>
+    <g stroke="#b79b70" fill="none" opacity=".6"><circle cx="380" cy="75" r="44"/><path d="M380 24V126M329 75H431M349 44L411 106M411 44L349 106"/></g>
+   </svg>
+   <div id="ticketVehicle" class="ticket-vehicle" aria-hidden="true">🚌</div>
+  </div>
+  <div class="ticket-foot"><span id="ticketMode">BUS JOURNEY</span><span id="ticketRecord">TRAVEL RECORD NO. 002</span></div>
+  <div class="ticket-progress"></div>
+ </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Transport describes the journey ARRIVING at each stop. Change 'bus' to 'plane' as needed.
+const destinations=[
+{name:'São Paulo',country:'Brazil',lat:-23.5505,lng:-46.6333,mode:'start',story:'Our South American adventure began in São Paulo — the first stop on a trip full of unforgettable places and memories.'},
+{name:'Rio de Janeiro',country:'Brazil',lat:-22.9068,lng:-43.1729,mode:'bus',story:'Beaches, city life and the spectacular scenery of Rio.'},
+{name:'Ilha Grande',country:'Brazil',lat:-23.142,lng:-44.169,mode:'bus',story:'An island escape with rainforest, beaches and boat journeys.'},
+{name:'Porto Alegre',country:'Brazil',lat:-30.0346,lng:-51.2177,mode:'bus',story:'Our adventure continued in southern Brazil.'},
+{name:'Buenos Aires',country:'Argentina',lat:-34.6037,lng:-58.3816,mode:'bus',story:'A new country and a new chapter in Buenos Aires.'},
+{name:'Iguazú Falls',country:'Argentina / Brazil',lat:-25.695,lng:-54.436,mode:'bus',story:'An unforgettable stop at the mighty Iguazú waterfalls.'},
+{name:'Corrientes',country:'Argentina',lat:-27.469,lng:-58.830,mode:'bus',story:'A stop in Corrientes on our way through northern Argentina.'},
+{name:'Salta',country:'Argentina',lat:-24.7821,lng:-65.4232,mode:'bus',story:'Into the dramatic landscapes of northern Argentina.'},
+{name:'Cafayate',country:'Argentina',lat:-26.0728,lng:-65.9761,mode:'bus',story:'Colourful valleys and spectacular scenery.'},
+{name:'Cachi',country:'Argentina',lat:-25.12,lng:-66.1667,mode:'bus',story:'A small town surrounded by striking Andean landscapes.'},
+{name:'Mendoza',country:'Argentina',lat:-32.8895,lng:-68.8458,mode:'bus',story:'Wine country in the shadow of the Andes.'},
+{name:'Santiago',country:'Chile',lat:-33.4489,lng:-70.6693,mode:'bus',story:'Across the border to Chile and Santiago.'},
+{name:'Lima',country:'Peru',lat:-12.0464,lng:-77.0428,mode:'plane',story:'The beginning of our adventure through Peru.'},
+{name:'Paracas',country:'Peru',lat:-13.8369,lng:-76.25,mode:'bus',story:'Where the desert meets the Pacific.'},
+{name:'Huacachina',country:'Peru',lat:-14.0875,lng:-75.7625,mode:'bus',story:'A desert oasis surrounded by enormous dunes.'},
+{name:'Arequipa',country:'Peru',lat:-16.409,lng:-71.5375,mode:'bus',story:'Another stop on the way towards the Andes.'},
+{name:'Cusco',country:'Peru',lat:-13.532,lng:-71.9675,mode:'bus',story:'Our base for exploring the Peruvian Andes.'},
+{name:'Machu Picchu',country:'Peru',lat:-13.1631,lng:-72.545,mode:'walk',story:'After the Salkantay trek, we reached Machu Picchu.'}
+];
+const saoPauloPhotos=['WhatsApp Image 2026-10-15 at 18.39.37 (1).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (2).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (3).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (4).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (5).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (6).jpeg','WhatsApp Image 2026-10-15 at 18.39.37 (7).jpeg','WhatsApp Image 2026-10-15 at 18.39.37.jpeg'];
+const rioPhotos=["rio-01.jpeg", "rio-02.jpeg", "rio-03.jpeg", "rio-04.jpeg", "rio-05.jpeg", "rio-06.jpeg", "rio-07.jpeg", "rio-08.jpeg"];
+const ilhaGrandePhotos=Array.from({length:8},(_,i)=>`ilha-grande-${String(i+1).padStart(2,'0')}.jpg`);
+const portoAlegrePhotos=Array.from({length:8},(_,i)=>`porto-alegre-${String(i+1).padStart(2,'0')}.jpg`);
+const photosByStop={0:saoPauloPhotos,1:rioPhotos,2:ilhaGrandePhotos,3:portoAlegrePhotos};
+const photoUrl=filename=>filename.split('/').map(encodeURIComponent).join('/');
+
+// Country outlines bundled into this HTML: no additional image uploads required.
+const countryOutlines={"Brazil":{"type":"Polygon","coordinates":[[[-53.373661668498244,-33.768377780900764],[-53.6505439927181,-33.20200408298183],[-53.209588995971544,-32.727666110974724],[-53.78795162618219,-32.047242526987624],[-55.601510179249345,-30.853878676071393],[-55.97324459494094,-30.883075860316303],[-56.976025763564735,-30.109686374636127],[-57.62513342958296,-30.21629485445426],[-55.16228634298457,-27.881915378533463],[-53.64873531758789,-26.92347258881609],[-53.628348965048744,-26.124865004177472],[-54.13004960795439,-25.547639255477254],[-54.625290696823576,-25.739255466415514],[-54.29347632507745,-24.570799655863965],[-54.29295956075452,-24.02101409271073],[-54.65283423523513,-23.83957813893396],[-55.02790178080955,-24.00127369557523],[-55.40074723979542,-23.956935316668805],[-55.610682745981144,-22.655619398694846],[-55.79795813660691,-22.356929620047822],[-56.47331743022939,-22.086300144135283],[-56.8815095689029,-22.28215382252148],[-57.937155727761294,-22.090175876557172],[-57.8706739976178,-20.73268767668195],[-58.166392381408045,-20.176700941653678],[-57.85380164247451,-19.96999521248619],[-57.949997321185826,-19.40000416430682],[-57.67600887717431,-18.96183969490403],[-57.49837114117099,-18.174187513911292],[-57.734558274961,-17.55246835700777],[-58.28080400250225,-17.271710300366017],[-58.38805843772404,-16.877109063385276],[-58.24121985536668,-16.299573256091293],[-60.158389655179036,-16.258283786690086],[-60.54296566429515,-15.093910414289596],[-60.251148851142936,-15.07721892665932],[-60.503304002511136,-13.775954685117659],[-61.08412126325565,-13.479383640194598],[-61.71320431176078,-13.489202162330052],[-62.127080857986385,-13.198780612849724],[-62.803060268796386,-13.000653171442686],[-63.19649878605057,-12.627032565972435],[-64.3163529120316,-12.461978041232193],[-65.40228146021303,-11.566270440317155],[-65.33843522811642,-9.761987806846392],[-66.6469083319628,-9.931331475466862],[-68.04819230820539,-10.712059014532485],[-68.27125362819326,-11.01452117273682],[-69.52967810736496,-10.951734307502194],[-70.0937522040469,-11.123971856331012],[-70.54868567572841,-11.009146823778465],[-70.48189388699117,-9.490118096558845],[-71.30241227892154,-10.079436130415374],[-72.18489071316985,-10.053597914269432],[-72.56303300646564,-9.520193780152717],[-73.22671342639016,-9.462212823121234],[-73.01538265653255,-9.032833347208062],[-73.57105933296707,-8.424446709835834],[-73.98723548042966,-7.523829847853065],[-73.7234014553635,-7.340998630404414],[-73.72448666044164,-6.91859547285064],[-73.1200274319236,-6.629930922068239],[-73.21971126981461,-6.089188734566078],[-72.9645072089412,-5.7412513159448935],[-72.89192765978726,-5.274561455916981],[-71.74840572781655,-4.593982842633011],[-70.92884334988358,-4.401591485210368],[-70.7947688463023,-4.251264743673303],[-69.89363521999663,-4.2981869441943275],[-69.42048580593223,-1.1226185034264091],[-69.5770653957766,-0.549991957200163],[-70.02065589057005,-0.18515634521953928],[-70.01556576198931,0.5414142928042054],[-69.45239600287246,0.7061587589506929],[-69.25243404811906,0.6026508650700748],[-69.21863766140018,0.9856765812174331],[-69.80459672715773,1.0890811222334662],[-69.81697323269162,1.7148052026396243],[-67.86856502955884,1.6924551456733923],[-67.5378100246747,2.03716278727633],[-67.2599975246736,1.7199986840849562],[-67.0650481838525,1.130112209473225],[-66.87632585312258,1.253360500489336],[-66.32576514348496,0.7244522159820121],[-65.54826738143757,0.7892544620760303],[-65.35471330428837,1.0952822941085003],[-64.19930579289051,1.49285492594602],[-64.08308549666609,1.9163691267940803],[-63.368788011311665,2.200899562993129],[-63.42286739770512,2.4110676131241746],[-64.2699991522658,2.497005520025567],[-64.40882788761792,3.126786200366624],[-64.3684944322141,3.797210394705246],[-64.81606401229402,4.056445217297423],[-64.62865943058755,4.14848094320925],[-63.093197597899106,3.7705711938587854],[-62.804533047116706,4.006965033377952],[-60.96689327660154,4.536467596856639],[-60.601179165271944,4.91809804933213],[-60.73357418480372,5.200277207861901],[-60.21368343773133,5.244486395687602],[-59.980958624904886,5.014061184098139],[-60.11100236676738,4.574966538914083],[-59.767405768458715,4.423502915866607],[-59.53803992373123,3.9588025984819377],[-59.815413174057866,3.6064985213320853],[-59.97452490908456,2.755232652188056],[-59.64604366722126,1.786893825686789],[-59.03086157900265,1.3176976586927225],[-58.540012986878295,1.2680882836925207],[-58.429477098205965,1.4639419620787208],[-57.66097103537737,1.6825849471056387],[-57.335822923396904,1.9485377058957594],[-55.995698004771754,1.8176671411166012],[-55.905600145070885,2.0219957543986595],[-56.0733418442903,2.2207949894254995],[-55.973322109589375,2.510363877773017],[-55.569755011606,2.4215062524471307],[-55.09758744975514,2.5237480737366127],[-54.08806250671725,2.105556545414629],[-53.77852067728892,2.3767027856500818],[-53.554839240113544,2.334896551925951],[-53.41846513529531,2.0533891870159806],[-52.939657151894956,2.1248576928756364],[-52.55642473001842,2.504705308437053],[-52.249337531123956,3.241094468596245],[-51.65779741067889,4.156232408053029],[-51.31714636901086,4.203490505383954],[-50.508875291533656,1.901563828942457],[-49.97407589374506,1.736483465986069],[-49.94710079608871,1.0461896834312228],[-50.699251268096916,0.22298411702168153],[-50.38821082213214,-0.07844451253681939],[-48.62056677915632,-0.2354891902718208],[-48.58449662941659,-1.2378052710050014],[-47.824956427590635,-0.5816179337628],[-44.905703090990414,-1.551739597178134],[-44.417619187993665,-2.137750339367976],[-44.58158850765578,-2.691308282078524],[-43.418791266440195,-2.383110039889793],[-41.47265682632825,-2.9120183243971165],[-39.97866533055404,-2.873054294449041],[-38.50038347019657,-3.7006523576033956],[-37.2232521225352,-4.820945733258917],[-36.45293738457639,-5.109403578312154],[-35.59779578301047,-5.149504489770649],[-35.23538896334756,-5.464937432480247],[-34.729993455533034,-7.343220716992967],[-35.12821204277422,-8.996401462442286],[-37.046518724097,-11.040721123908803],[-37.68361161960736,-12.171194756725823],[-38.42387651218844,-13.038118584854288],[-38.67388709161652,-13.057652276260619],[-38.953275722802545,-13.793369642800023],[-38.88229814304965,-15.667053724838768],[-39.2673392400564,-17.867746270420483],[-39.58352149103423,-18.262295830968938],[-39.76082333022764,-19.59911345792741],[-40.77474077001034,-20.904511814052423],[-40.94475623225061,-21.93731698983781],[-41.754164191238225,-22.370675551037458],[-41.98828426773656,-22.970070489190896],[-43.07470374202475,-22.96769337330547],[-44.64781185563781,-23.351959323827842],[-45.35213578955992,-23.796841729428582],[-46.47209326840554,-24.088968601174543],[-47.64897233742066,-24.885199069927722],[-48.4954581365777,-25.877024834905654],[-48.64100480812774,-26.623697605090932],[-48.474735887228654,-27.17591196056189],[-48.661520351747626,-28.18613453543572],[-48.8884574041574,-28.674115085567884],[-49.587329474472675,-29.224469089476337],[-50.696874152211485,-30.98446502047296],[-52.256081305538046,-32.24536996839467],[-52.712099982297694,-33.19657805759118],[-53.373661668498244,-33.768377780900764]]]},"Argentina":{"type":"MultiPolygon","coordinates":[[[[-68.63401022758323,-52.63637045887449],[-67.75,-53.85],[-66.45,-54.45],[-65.05,-54.699999999999996],[-65.5,-55.2],[-66.45,-55.25],[-66.95992000000001,-54.896810000000016],[-68.63335000000001,-54.869499999999995],[-68.63401022758323,-52.63637045887449]]],[[[-57.62513342958296,-30.21629485445426],[-58.14244035504076,-32.044503676076154],[-58.13264767112145,-33.040566908502015],[-58.349611172098875,-33.26318897881541],[-58.49544206402655,-34.43148976007008],[-57.22582963726366,-35.28802662530788],[-57.36235877137878,-35.977390232081476],[-56.73748735210545,-36.41312590916655],[-56.78828528504836,-36.901571547189334],[-57.74915686708346,-38.18387053807989],[-59.23185706240189,-38.720220228837235],[-61.23744523786564,-38.9284245745412],[-62.33595699731013,-38.827707208004334],[-62.125763108962936,-39.42410491308485],[-62.330530971919494,-40.17258635840034],[-62.145994432205214,-40.67689666113672],[-62.745802781816984,-41.0287614886121],[-63.77049475773255,-41.16678923926369],[-64.73208980981973,-40.80267709733515],[-65.11803524439158,-41.06431487402891],[-64.97856055363582,-42.05800099056934],[-64.3034079657425,-42.35901620866951],[-63.75594784204239,-42.043686618824495],[-63.458059048095876,-42.563138116222405],[-64.37880388045633,-42.87355844499969],[-65.18180396183975,-43.495380954767796],[-65.32882341171013,-44.501366062193696],[-65.5652689276616,-45.036785577169795],[-66.50996578638934,-45.03962778094586],[-67.29379391139247,-45.55189625425519],[-67.58054643418008,-46.30177296324257],[-66.59706641301729,-47.033924655953825],[-65.64102657740149,-47.23613453551193],[-65.98508826360079,-48.133289076531135],[-67.16617896184769,-48.697337334996945],[-67.81608761256643,-49.86966887797038],[-68.72874508327321,-50.26421843851883],[-69.13853919134777,-50.732510267947795],[-68.81556148952356,-51.771104011594126],[-68.14999487982038,-52.34998340612768],[-69.49836218939609,-52.14276091263727],[-71.91480383979638,-52.0090223058659],[-72.32940385607407,-51.42595631287243],[-72.30997351753234,-50.67700977966632],[-72.97574683296469,-50.741450290734285],[-73.32805091011453,-50.378785088909915],[-73.4154357571201,-49.31843637471297],[-72.64824744331494,-48.87861825947683],[-72.33116085477201,-48.2442383766618],[-72.44735531278027,-47.73853281025352],[-71.91725847033024,-46.88483814879177],[-71.55200944689128,-45.5607329241771],[-71.65931555854536,-44.973688653341426],[-71.22277889675976,-44.784242852559416],[-71.32980078803622,-44.407521661151655],[-71.79362260607193,-44.207172133156064],[-71.46405615913051,-43.787611179378345],[-71.91542395698389,-43.40856454851745],[-72.14889807807856,-42.254888197601375],[-71.7468037584155,-42.05138640723598],[-71.91573401557763,-40.83233936947069],[-71.41351660834906,-38.91602223079114],[-70.81466427273469,-38.55299529394074],[-71.11862504747549,-37.57682748794724],[-71.12188066270987,-36.65812387466232],[-70.36476925320164,-36.00508879978992],[-70.38804948594913,-35.16968759535949],[-69.81730912950152,-34.1935714657983],[-69.81477698431922,-33.273886000299825],[-70.0743993801536,-33.09120981214805],[-70.53506893581951,-31.36501026787031],[-69.91900834825194,-30.33633920666828],[-70.01355038112992,-29.367922865518572],[-69.65613033718317,-28.459141127233686],[-69.00123491074825,-27.52121388113618],[-68.29554155137043,-26.89933969493578],[-68.59479977077268,-26.506908868111296],[-68.38600114609736,-26.185016371365215],[-68.41765296087614,-24.51855478281688],[-67.32844295924417,-24.02530323659095],[-66.9852339341777,-22.98634856536284],[-67.1066735500636,-22.735924574476417],[-66.27333940292485,-21.83231047942072],[-64.96489213729461,-22.075861504812327],[-64.37702104354226,-22.79809132252354],[-63.986838141522476,-21.99364430103595],[-62.84646847192156,-22.03498544686945],[-60.846564704009914,-23.880712579038292],[-60.02896603050403,-24.032796319273274],[-58.80712846539498,-24.77145924245331],[-57.77721716981794,-25.16233977630904],[-57.63366004091113,-25.60365650808164],[-58.61817359071975,-27.123718763947096],[-56.486701626192996,-27.548499037386293],[-55.69584550639816,-27.387837009390864],[-54.78879492859505,-26.621785577096134],[-54.625290696823576,-25.739255466415514],[-54.13004960795439,-25.547639255477254],[-53.628348965048744,-26.124865004177472],[-53.64873531758789,-26.92347258881609],[-55.16228634298457,-27.881915378533463],[-57.62513342958296,-30.21629485445426]]]]},"Chile":{"type":"MultiPolygon","coordinates":[[[[-68.63401022758323,-52.63637045887449],[-68.63335000000001,-54.869499999999995],[-66.95992000000001,-54.896810000000016],[-67.29102999999992,-55.30123999999995],[-68.14862999999991,-55.61183],[-69.2321,-55.49905999999993],[-69.95808999999997,-55.19843000000003],[-71.00567999999998,-55.053830000000005],[-73.28519999999997,-53.95751999999993],[-74.66253,-52.837489999999946],[-73.8381,-53.04743000000002],[-72.43417999999997,-53.71539999999999],[-71.10773,-54.07432999999992],[-70.59177999999986,-53.61582999999996],[-70.26747999999998,-52.93123000000003],[-69.34564999999992,-52.518299999999954],[-68.63401022758323,-52.63637045887449]]],[[[-69.59042375352405,-17.580011895419332],[-69.10024695501949,-18.260125420812678],[-68.96681840684187,-18.981683444904107],[-68.44222510443092,-19.40506845467143],[-68.75716712103375,-20.372657972904463],[-68.21991309271128,-21.494346612231865],[-67.82817989772273,-22.872918796482175],[-67.1066735500636,-22.735924574476417],[-66.9852339341777,-22.98634856536284],[-67.32844295924417,-24.02530323659095],[-68.41765296087614,-24.51855478281688],[-68.38600114609736,-26.185016371365215],[-68.59479977077268,-26.506908868111296],[-68.29554155137043,-26.89933969493578],[-69.00123491074825,-27.52121388113618],[-69.65613033718317,-28.459141127233686],[-70.01355038112992,-29.367922865518572],[-69.91900834825194,-30.33633920666828],[-70.53506893581951,-31.36501026787031],[-70.0743993801536,-33.09120981214805],[-69.81477698431922,-33.273886000299825],[-69.81730912950152,-34.1935714657983],[-70.38804948594913,-35.16968759535949],[-70.36476925320164,-36.00508879978992],[-71.12188066270987,-36.65812387466232],[-71.11862504747549,-37.57682748794724],[-70.81466427273469,-38.55299529394074],[-71.41351660834906,-38.91602223079114],[-71.91573401557763,-40.83233936947069],[-71.7468037584155,-42.05138640723598],[-72.14889807807856,-42.254888197601375],[-71.91542395698389,-43.40856454851745],[-71.46405615913051,-43.787611179378345],[-71.79362260607193,-44.207172133156064],[-71.32980078803622,-44.407521661151655],[-71.22277889675976,-44.784242852559416],[-71.65931555854536,-44.973688653341426],[-71.55200944689128,-45.5607329241771],[-71.91725847033024,-46.88483814879177],[-72.44735531278027,-47.73853281025352],[-72.33116085477201,-48.2442383766618],[-72.64824744331494,-48.87861825947683],[-73.4154357571201,-49.31843637471297],[-73.32805091011453,-50.378785088909915],[-72.97574683296469,-50.741450290734285],[-72.30997351753234,-50.67700977966632],[-72.32940385607407,-51.42595631287243],[-71.91480383979638,-52.0090223058659],[-68.57154537624133,-52.299443855346226],[-69.46128434922667,-52.29195077266391],[-70.8451016913546,-52.89920052852571],[-71.00633216010525,-53.83325204220132],[-71.429794684521,-53.85645476030037],[-72.55794287788488,-53.53141000118449],[-74.94676347522517,-52.262753588419],[-75.2600260077785,-51.62935475037325],[-74.97663245308988,-51.0433956846157],[-75.47975419788355,-50.37837167745158],[-75.60801510283198,-48.67377288187184],[-75.18276974150216,-47.7119194476232],[-74.1265809801047,-46.93925343199511],[-75.64439531116545,-46.64764332457207],[-74.69215369332312,-45.76397633238103],[-74.35170935738425,-44.10304412208794],[-73.24035600451522,-44.454960625995604],[-72.7178039211798,-42.38335580827898],[-73.38889990913822,-42.117532240569574],[-73.70133561877488,-43.365776462579774],[-74.33194312203261,-43.22495818458442],[-73.67709937202999,-39.94221282324317],[-73.21759253609065,-39.25868865331856],[-73.50555945503712,-38.282882582351114],[-73.58806087919109,-37.15628468195598],[-73.1667170884993,-37.12378020604439],[-71.86173214383263,-33.90909270603153],[-71.4384504869299,-32.41889942803078],[-71.66872066922247,-30.920644626592495],[-71.37008256700773,-30.09568206148503],[-71.48989437527645,-28.861442152625923],[-70.90512386746161,-27.640379734001247],[-70.09124589708074,-21.39331918710126],[-70.37257239447771,-18.34797535570887],[-69.85844356960587,-18.092693780187012],[-69.59042375352405,-17.580011895419332]]]]},"Peru":{"type":"Polygon","coordinates":[[[-69.89363521999663,-4.2981869441943275],[-70.7947688463023,-4.251264743673303],[-70.92884334988358,-4.401591485210368],[-71.74840572781655,-4.593982842633011],[-72.89192765978726,-5.274561455916981],[-72.9645072089412,-5.7412513159448935],[-73.21971126981461,-6.089188734566078],[-73.1200274319236,-6.629930922068239],[-73.72448666044164,-6.91859547285064],[-73.7234014553635,-7.340998630404414],[-73.98723548042966,-7.523829847853065],[-73.57105933296707,-8.424446709835834],[-73.01538265653255,-9.032833347208062],[-73.22671342639016,-9.462212823121234],[-72.56303300646564,-9.520193780152717],[-72.18489071316985,-10.053597914269432],[-71.30241227892154,-10.079436130415374],[-70.48189388699117,-9.490118096558845],[-70.54868567572841,-11.009146823778465],[-70.0937522040469,-11.123971856331012],[-69.52967810736496,-10.951734307502194],[-68.66507971868963,-12.561300144097173],[-68.88007951523997,-12.899729099176653],[-68.9488866848366,-14.453639418193283],[-69.33953467474701,-14.953195489158832],[-69.16034664577495,-15.323973890853019],[-69.38976416693471,-15.660129082911652],[-68.9596353827533,-16.50069793057127],[-69.85844356960587,-18.092693780187012],[-70.37257239447771,-18.34797535570887],[-71.37525021023693,-17.773798516513857],[-71.46204077827113,-17.363487644116383],[-73.44452958850042,-16.359362888252996],[-75.23788265654144,-15.265682875227782],[-76.00920508492995,-14.649286390850321],[-76.42346920439775,-13.823186944232432],[-76.25924150257417,-13.535039157772943],[-77.10619238962184,-12.22271615972082],[-79.03695309112695,-8.386567884965892],[-79.44592037628485,-7.93083342858386],[-79.76057817251005,-7.194340915560084],[-80.53748165558608,-6.541667575713717],[-81.24999630402642,-6.136834405139183],[-80.92634680858244,-5.690556735866565],[-81.41094255239946,-4.7367648250554595],[-81.09966956248937,-4.036394138203697],[-80.30256059438722,-3.4048564591647126],[-80.18401485870967,-3.8211617977080437],[-80.46929460317695,-4.0592867977089995],[-80.44224199087216,-4.425724379090674],[-80.02890804718561,-4.3460909969288934],[-79.62497921417618,-4.454198093283495],[-79.20528906931773,-4.959128513207389],[-78.63989722361234,-4.547784112164074],[-78.45068396677564,-3.873096612161376],[-77.83790483265861,-3.003020521663103],[-76.63539425322672,-2.6086776668438176],[-75.54499569365204,-1.5616097957458803],[-75.23372270374195,-0.9114169246495294],[-75.37322323271385,-0.1520317521204504],[-75.10662451852008,-0.05720549886486026],[-74.44160051135597,-0.5308200008198867],[-74.12239518908906,-1.002832533373848],[-73.6595035468346,-1.2604912247811342],[-73.07039221870724,-2.3089543595509525],[-72.32578650581365,-2.434218031426454],[-71.7747607082854,-2.169789727388938],[-71.41364579942979,-2.3428024227021282],[-70.81347571479196,-2.2568645158007428],[-70.04770850287485,-2.725156345229699],[-70.69268205430971,-3.742872002785859],[-70.39404395209499,-3.7665914852078255],[-69.89363521999663,-4.2981869441943275]]]}};
+const countryInfo={
+ Brazil:{chapter:'I',subtitle:'Where the adventure began',stamp:'BRASIL',stops:'São Paulo · Rio de Janeiro · Ilha Grande · Porto Alegre',color:'#1c8b58'},
+ Argentina:{chapter:'II',subtitle:'Across the continent',stamp:'ARGENTINA',stops:'Buenos Aires · Iguazú Falls · Corrientes · Salta · Cafayate · Cachi · Mendoza',color:'#72b9dc'},
+ Chile:{chapter:'III',subtitle:'Beyond the Andes',stamp:'CHILE',stops:'Santiago',color:'#c13b3b'},
+ Peru:{chapter:'IV',subtitle:'Into the Andes',stamp:'PERÚ',stops:'Lima · Paracas · Huacachina · Arequipa · Cusco · Machu Picchu',color:'#bb3535'}
+};
+const journeyCountry=i=>i<=3?'Brazil':i<=10?'Argentina':i===11?'Chile':'Peru';
+let pendingCountryStop=null,countryOutlineLayer=null;
+const countryReveal=document.getElementById('countryReveal');
+function drawCountryFlag(name){
+ const geom=countryOutlines[name];const rings=geom.type==='Polygon'?[geom.coordinates]:geom.coordinates;
+ const all=rings.flat(2);const xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
+ const xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);
+ const scale=Math.min(265/(xmax-xmin),325/(ymax-ymin));
+ const dx=(300-(xmax-xmin)*scale)/2,dy=(360-(ymax-ymin)*scale)/2;
+ const path=rings.map(poly=>poly.map(ring=>ring.map((p,i)=>`${i?'L':'M'}${(dx+(p[0]-xmin)*scale).toFixed(2)},${(dy+(ymax-p[1])*scale).toFixed(2)}`).join(' ')+' Z').join(' ')).join(' ');
+ const flags={
+  Brazil:`<rect width="300" height="360" fill="#169447"/><path d="M 15 180 L150 45 L285 180 L150 315 Z" fill="#f4d13e"/><circle cx="150" cy="180" r="69" fill="#20478e"/><path d="M80 164 Q145 140 217 176" fill="none" stroke="white" stroke-width="12"/>`,
+  Argentina:`<rect width="300" height="120" fill="#75bce5"/><rect y="120" width="300" height="120" fill="white"/><rect y="240" width="300" height="120" fill="#75bce5"/><circle cx="150" cy="180" r="17" fill="#e6b43f"/>`,
+  Chile:`<rect width="300" height="180" fill="white"/><rect y="180" width="300" height="180" fill="#d73b3b"/><rect width="145" height="180" fill="#164f9d"/><text x="72" y="119" font-size="95" text-anchor="middle" fill="white">★</text>`,
+  Peru:`<rect width="100" height="360" fill="#d43737"/><rect x="100" width="100" height="360" fill="white"/><rect x="200" width="100" height="360" fill="#d43737"/>`
+ };
+ const svg=document.getElementById('countryShape');
+ svg.innerHTML=`<defs><clipPath id="nationClip"><path d="${path}" fill-rule="evenodd"/></clipPath></defs><g clip-path="url(#nationClip)">${flags[name]}</g><path d="${path}" fill="none" stroke="#725d3b" stroke-width="1.7"/>`;
+ svg.setAttribute('aria-label',name+' silhouette filled with national flag colours');
+}
+function openCountryReveal(target){
+ const name=journeyCountry(target),info=countryInfo[name];pendingCountryStop=target;
+ document.querySelector('.country-page').classList.toggle('brazil-editorial',name==='Brazil');
+ document.getElementById('countryChapter').textContent=`CHAPTER ${info.chapter} · SOUTH AMERICA`;
+ document.getElementById('countryName').textContent=name;
+ document.getElementById('countrySubtitle').textContent=info.subtitle;
+ document.getElementById('countryStops').textContent=info.stops;
+ document.getElementById('stampName').textContent=info.stamp;
+ document.getElementById('enterCountry').textContent=`ENTER ${name.toUpperCase()} →`;
+ drawCountryFlag(name);
+ chapter.style.display='none';overview.classList.remove('visible');
+ document.getElementById('topbar').style.display='none';document.getElementById('bottom').style.display='none';
+ if(countryOutlineLayer)map.removeLayer(countryOutlineLayer);
+ countryOutlineLayer=L.geoJSON({type:'Feature',geometry:countryOutlines[name]}, {style:{color:'#e3c67e',weight:3,fillColor:info.color,fillOpacity:.58,interactive:false}}).addTo(map);
+ map.fitBounds(countryOutlineLayer.getBounds(),{padding:[45,45],animate:false,maxZoom:5});
+ countryReveal.classList.add('visible');countryReveal.setAttribute('aria-hidden','false');
+ document.getElementById('enterCountry').focus();
+}
+function finishCountryReveal(){
+ if(pendingCountryStop===null)return;
+ const target=pendingCountryStop;pendingCountryStop=null;
+ countryReveal.classList.remove('visible');countryReveal.setAttribute('aria-hidden','true');
+ if(countryOutlineLayer){map.removeLayer(countryOutlineLayer);countryOutlineLayer=null;}
+ document.getElementById('topbar').style.display='flex';document.getElementById('bottom').style.display='flex';
+ showStop(target);
+}
+document.getElementById('enterCountry').onclick=finishCountryReveal;
+document.getElementById('skipCountry').onclick=finishCountryReveal;
+
+const map=L.map('map',{zoomControl:false,preferCanvas:true}).setView([-20,-60],4);
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors',maxZoom:19}).addTo(map);
+const point=p=>L.latLng(p.lat,p.lng);
+const markers=destinations.map((p,i)=>L.marker(point(p),{icon:L.divIcon({className:'',html:`<div class="place-label" id="pin-${i}">${i+1}. ${p.name}</div>`,iconSize:[130,36],iconAnchor:[65,18]})}).addTo(map).on('click',()=>jumpTo(i)));
+const select=document.getElementById('destSelect');select.innerHTML='<option value="">Choose a destination</option>';
+destinations.forEach((p,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=`${i+1}. ${p.name}`;select.appendChild(option)});
+const chapter=document.getElementById('chapter');const status=document.getElementById('travelStatus');
+let active=0,travelling=false,vehicle=null,segment=null,completedSegments=[],animationId=null,tripToken=0;
+const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function setControls(busy){travelling=busy;document.getElementById('next').disabled=busy||active===destinations.length-1;document.getElementById('prev').disabled=busy||active===0;select.disabled=busy;document.getElementById('progressLabel').textContent=`${String(active+1).padStart(2,'0')} / ${destinations.length}`;}
+function updatePins(){destinations.forEach((p,i)=>{const el=document.getElementById('pin-'+i);if(el)el.classList.toggle('active',i===active)})}
+function renderBrazilRoute(i){
+ const el=document.getElementById('brazilRoute');el.style.display=i>=0&&i<=3?'block':'none';
+ if(i>3)return;
+ const names=['São Paulo','Rio','Ilha Grande','Porto Alegre'];
+ el.querySelector('.route-items').innerHTML=names.map((name,j)=>`<button type="button" data-stop="${j}" class="${j===i?'active':''}" ${j===i?'aria-current="step"':''}><span class="route-dot">${j+1}</span><span>${name}</span></button>`).join('');
+}
+document.getElementById('brazilRoute').addEventListener('click',event=>{const button=event.target.closest('button[data-stop]');if(button)jumpTo(Number(button.dataset.stop))});
+function showChapter(i){const p=destinations[i];active=i;select.value=String(i);document.getElementById('country').textContent=`CHAPTER ${String(i+1).padStart(2,'0')} · ${p.country}`;document.getElementById('placeName').textContent=p.name;document.getElementById('story').textContent=p.story;const files=photosByStop[i]||[];document.getElementById('photos').innerHTML=files.map((f,j)=>{const src=photoUrl(f);return `<a href="${src}" target="_blank" rel="noopener" data-photo="PHOTO ${String(j+1).padStart(2,'0')}"><img src="${src}" loading="lazy" alt="${p.name} travel photograph ${j+1}" onerror="this.onerror=null;this.closest('a').classList.add('photo-missing');this.remove()"></a>`}).join('');renderBrazilRoute(i);document.getElementById('photos').classList.toggle('editorial-photos',i<=3);document.getElementById('galleryHeading').style.display=files.length?'block':'none';document.getElementById('photoNote').textContent=files.length?'Use the arrows or keyboard to explore the photo journal.':'More photographs and memories coming soon.';document.getElementById('launchSlides').style.display=files.length?'block':'none';chapter.style.display='block';status.style.display='none';setControls(false);updatePins();}
+function clearAnimation(){tripToken++;if(animationId!==null)cancelAnimationFrame(animationId);animationId=null;if(vehicle){map.removeLayer(vehicle);vehicle=null}if(segment){map.removeLayer(segment);segment=null}status.style.display='none';travelling=false}
+function showStop(i){const p=destinations[i];active=i;updatePins();select.value=String(i);map.setView(point(p),9,{animate:false});showChapter(i)}
+function jumpTo(i){if(travelling)return;clearAnimation();showStop(i)}
+// One brief CSS-only ticket transition. The map itself never animates a vehicle.
+let ticketTimer=null,ticketDestination=null;
+const ticketOverlay=document.getElementById('travelTicket');
+function closeTicket(continueJourney=true){
+ if(ticketTimer!==null){clearTimeout(ticketTimer);ticketTimer=null;}
+ const target=ticketDestination;ticketDestination=null;
+ ticketOverlay.classList.remove('visible');ticketOverlay.setAttribute('aria-hidden','true');
+ if(!continueJourney||target===null)return;
+ if(journeyCountry(active)!==journeyCountry(target))openCountryReveal(target);
+ else showStop(target);
+}
+function showTravelTicket(target){
+ const from=destinations[active],to=destinations[target];
+ ticketDestination=target;
+ document.getElementById('ticketFrom').textContent=from.name;
+ document.getElementById('ticketTo').textContent=to.name;
+ document.getElementById('ticketChapter').textContent=journeyCountry(target).toUpperCase()+' · CHAPTER '+String(target+1).padStart(2,'0');
+ document.getElementById('ticketRecord').textContent='TRAVEL RECORD NO. '+String(target+1).padStart(3,'0');
+ const boat=from.name==='Rio de Janeiro'&&to.name==='Ilha Grande'||from.name==='Ilha Grande'&&to.name==='Rio de Janeiro';
+ const leavingIsland=from.name==='Ilha Grande'&&to.name==='Porto Alegre';
+ const flying=to.mode==='plane';
+ document.getElementById('ticketMode').textContent=boat?'ROAD TRANSFER · FERRY CROSSING':leavingIsland?'FERRY · ONWARD ROAD JOURNEY':flying?'FLIGHT':to.mode==='walk'?'ON FOOT':'BUS JOURNEY';
+ const vehicle=document.getElementById('ticketVehicle');
+ vehicle.textContent=boat||leavingIsland?'⛴️':flying?'✈️':to.mode==='walk'?'🥾':'🚌';
+ // Restart animation by replacing only the tiny moving element, not redrawing the map.
+ vehicle.style.animation='none';void vehicle.offsetWidth;vehicle.style.animation='';
+ ticketOverlay.classList.add('visible');ticketOverlay.setAttribute('aria-hidden','false');
+ const progress=ticketOverlay.querySelector('.ticket-progress');
+ progress.replaceWith(progress.cloneNode(true));
+ document.getElementById('ticketSkip').focus();
+ ticketTimer=setTimeout(()=>closeTicket(true),reducedMotion?450:5000);
+}
+document.getElementById('ticketSkip').onclick=()=>closeTicket(true);
+function moveTo(target){
+ if(target<0||target>=destinations.length||target===active||ticketDestination!==null)return;
+ const from=destinations[active],to=destinations[target];
+ clearAnimation();
+ if(Math.abs(target-active)===1){
+  completedSegments.push(L.polyline([point(from),point(to)],{color:'#ad7741',weight:3,dashArray:'7 8',opacity:.8}).addTo(map));
+ }
+ showTravelTicket(target);
+}
+const cover=document.getElementById('cover');
+const overview=document.getElementById('continentIntro');
+let opening=false;
+function continentView(){
+  chapter.style.display='none';
+  map.setView([-19,-61],3,{animate:false});
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('bottom').style.display='none';
+  overview.classList.add('visible');
+}
+document.getElementById('start').onclick=()=>{
+  if(opening)return;
+  opening=true;
+  document.getElementById('experience').style.display='block';
+  continentView();
+  map.invalidateSize();
+  // A single CSS page turn, rather than a continuously animated map.
+  requestAnimationFrame(()=>cover.classList.add('turning'));
+  setTimeout(()=>{cover.style.display='none';opening=false;map.invalidateSize()},1200);
+};
+document.getElementById('firstStop').onclick=()=>{
+  overview.classList.remove('visible');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('bottom').style.display='flex';
+  openCountryReveal(0);
+};
+document.getElementById('home').onclick=()=>{closeTicket(false);pendingCountryStop=null;countryReveal.classList.remove('visible');if(countryOutlineLayer){map.removeLayer(countryOutlineLayer);countryOutlineLayer=null;}clearAnimation();chapter.style.display='none';overview.classList.remove('visible');document.getElementById('experience').style.display='none';cover.classList.remove('turning');cover.style.display='flex';setControls(false)};
+document.getElementById('close').onclick=()=>{chapter.style.display='none'};
+document.getElementById('next').onclick=()=>moveTo(active+1);
+document.getElementById('prev').onclick=()=>moveTo(active-1);
+select.onchange=()=>{if(select.value!=='')jumpTo(Number(select.value))};
+setControls(false);
+
+
+// A separate atlas-style timeline. Uses the site's existing destination and photo data.
+const timelineView=document.getElementById('timelineView');
+const timelineList=document.getElementById('timelineList');
+const timelineFilters=document.getElementById('timelineFilters');
+// Add confirmed visit dates here when available; no dates are fabricated.
+const timelineDates={};
+let timelineFilter='All';
+function renderTimeline(){
+ timelineFilters.replaceChildren();
+ ['All','Brazil','Argentina','Chile','Peru'].forEach(country=>{
+  const b=document.createElement('button');b.type='button';b.textContent=country==='All'?'Entire journey':country;
+  b.classList.toggle('active',timelineFilter===country);
+  b.onclick=()=>{timelineFilter=country;renderTimeline()};
+  timelineFilters.appendChild(b);
+ });
+ timelineList.replaceChildren();
+ destinations.forEach((d,i)=>{
+  if(timelineFilter!=='All'&&journeyCountry(i)!==timelineFilter)return;
+  const row=document.createElement('div');row.className='timeline-entry';
+  const date=document.createElement('div');date.className='timeline-date';date.textContent=timelineDates[i]||`STOP ${String(i+1).padStart(2,'0')}`;
+  const dot=document.createElement('div');dot.className='timeline-dot';
+  const visit=document.createElement('button');visit.type='button';visit.className='timeline-visit';
+  const photo=(photosByStop[i]||[])[0];
+  const illustration=i<5?'timeline_art_'+String(i+1).padStart(2,'0')+'.webp':null;
+  const imageWrap=document.createElement('div');imageWrap.className='timeline-image-frame';
+  const placeholder=document.createElement('div');placeholder.className='timeline-image-fallback';
+  placeholder.textContent=journeyCountry(i).toUpperCase()+' · '+String(i+1).padStart(2,'0');
+  imageWrap.appendChild(placeholder);
+  // Use consistent illustrated images for the first five entries. Later stops
+  // show designed placeholders rather than broken or stretched photographs.
+  if(illustration){
+    const img=document.createElement('img');img.src=illustration;img.alt='Illustrated travel scene for '+d.name;
+    img.loading='lazy';img.decoding='async';
+    img.onload=()=>{placeholder.hidden=true};
+    img.onerror=()=>{img.remove();placeholder.hidden=false};
+    imageWrap.appendChild(img);
+  }else if(photo){
+    const img=document.createElement('img');img.src=photoUrl(photo);img.alt=d.name+' photograph';
+    img.loading='lazy';img.decoding='async';
+    img.onload=()=>{placeholder.hidden=true};
+    img.onerror=()=>{img.remove();placeholder.hidden=false};
+    imageWrap.appendChild(img);
+  }
+  visit.appendChild(imageWrap);
+  const copy=document.createElement('div');
+  const title=document.createElement('div');title.className='timeline-name';title.textContent=d.name;
+  const country=document.createElement('div');country.className='timeline-country';country.textContent=d.country.toUpperCase();
+  const desc=document.createElement('div');desc.className='timeline-desc';desc.textContent=d.story;
+  copy.append(title,country,desc);
+  const arrow=document.createElement('span');arrow.className='timeline-arrow';arrow.textContent='→';
+  visit.append(copy,arrow);
+  visit.onclick=()=>{closeTimeline();cover.style.display='none';document.getElementById('experience').style.display='block';overview.classList.remove('visible');document.getElementById('topbar').style.display='flex';document.getElementById('bottom').style.display='flex';map.invalidateSize();jumpTo(i)};
+  row.append(date,dot,visit);timelineList.appendChild(row);
+ });
+}
+function openTimeline(){renderTimeline();timelineView.classList.add('visible');timelineView.scrollTop=0;document.getElementById('timelineClose').focus()}
+function closeTimeline(){timelineView.classList.remove('visible')}
+document.getElementById('timelineButton').onclick=openTimeline;
+document.getElementById('timelineFromIntro').onclick=openTimeline;
+document.getElementById('timelineClose').onclick=closeTimeline;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&timelineView.classList.contains('visible'))closeTimeline()});
+
+// Full-screen, in-page destination photo slideshow.
+let slidePhotos=[],slideIndex=0,slidePlace='',slideStopIndex=0;
+let publishedCaptions={};
+const captionKey=(stopIndex,photoIndex)=>`${stopIndex}:${photoIndex}`;
+const editMode=new URLSearchParams(location.search).get('edit')==='1';
+const captionLabel=document.getElementById('slideCaption');
+const captionEditor=document.getElementById('captionEditor');
+const captionInput=document.getElementById('captionText');
+const captionMessage=document.getElementById('captionMessage');
+let githubToken=''; // Deliberately not persisted in localStorage or the repository.
+async function loadCaptions(){
+  try{
+    const response=await fetch('captions.json',{cache:'no-store'});
+    if(response.ok){const data=await response.json();publishedCaptions=data&&typeof data==='object'&&!Array.isArray(data)?data:{};}
+  }catch(error){console.warn('Captions not yet available:',error)}
+  if(slideshow.classList.contains('open'))showSlide();
+}
+loadCaptions();
+function updateCaption(){captionLabel.textContent=publishedCaptions[captionKey(slideStopIndex,slideIndex)]||'';}
+function closeCaptionEditor(){captionEditor.style.display='none';slideshow.classList.remove('editing');captionMessage.textContent='';}
+function openCaptionEditor(){
+  captionInput.value=publishedCaptions[captionKey(slideStopIndex,slideIndex)]||'';
+  captionEditor.style.display='block';slideshow.classList.add('editing');
+  captionMessage.textContent='To publish, enter your repository and GitHub token under publishing settings.';
+  captionInput.focus();
+}
+function base64Utf8(value){const bytes=new TextEncoder().encode(value);let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return btoa(binary)}
+async function saveCaptionToGithub(){
+  const repo=document.getElementById('githubRepo').value.trim();
+  const token=document.getElementById('githubToken').value.trim()||githubToken;
+  if(!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo)||!token){captionMessage.textContent='Enter owner/repository and a GitHub token in publishing settings first.';return;}
+  githubToken=token;
+  document.getElementById('githubToken').value='';
+  const button=document.getElementById('saveCaption');button.disabled=true;
+  captionMessage.textContent='Publishing caption to GitHub…';
+  const key=captionKey(slideStopIndex,slideIndex),value=captionInput.value.trim();
+  const api=`https://api.github.com/repos/${repo}/contents/captions.json`;
+  const headers={'Accept':'application/vnd.github+json','Authorization':`Bearer ${token}`,'X-GitHub-Api-Version':'2022-11-28'};
+  try{
+    const existing=await fetch(api,{headers});
+    if(!existing.ok&&existing.status!==404)throw new Error(`Cannot read captions.json (GitHub HTTP ${existing.status}). Check repository and token permissions.`);
+    let current={},sha;
+    if(existing.ok){const file=await existing.json();sha=file.sha;const raw=atob(file.content.replace(/\s/g,''));const bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));current=JSON.parse(new TextDecoder().decode(bytes));}
+    if(!current||typeof current!=='object'||Array.isArray(current))current={};
+    if(value)current[key]=value;else delete current[key];
+    const payload={message:`Update photo caption for ${slidePlace} photo ${slideIndex+1}`,content:base64Utf8(JSON.stringify(current,null,2)+'\n')};
+    if(sha)payload.sha=sha;
+    const result=await fetch(api,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!result.ok){let message='';try{message=(await result.json()).message||''}catch{}throw new Error(`GitHub HTTP ${result.status}: ${message}`)}
+    publishedCaptions=current;updateCaption();
+    captionMessage.textContent='Published to GitHub. Public website updates after GitHub Pages deploys.';
+  }catch(error){captionMessage.textContent=`Not saved: ${error.message}`;}
+  finally{button.disabled=false;}
+}
+document.getElementById('editCaptionButton').onclick=openCaptionEditor;
+document.getElementById('cancelCaption').onclick=closeCaptionEditor;
+document.getElementById('saveCaption').onclick=saveCaptionToGithub;
+
+const slideshow=document.getElementById('slideshow');
+const slideImage=document.getElementById('slideImage');
+let slideshowReturnFocus=null;
+function showSlide(){
+  if(!slidePhotos.length)return;
+  slideImage.src=photoUrl(slidePhotos[slideIndex]);
+  slideImage.alt=`${slidePlace} photograph ${slideIndex+1}`;
+  closeCaptionEditor();
+  updateCaption();
+  document.getElementById('slideTitle').textContent=slidePlace;
+  document.getElementById('slideCounter').textContent=`${String(slideIndex+1).padStart(2,'0')} / ${String(slidePhotos.length).padStart(2,'0')}`;
+}
+function openSlideshow(stopIndex,photoIndex=0){
+  slidePhotos=photosByStop[stopIndex]||[];
+  if(!slidePhotos.length)return;
+  slidePlace=destinations[stopIndex].name;
+  slideStopIndex=stopIndex;
+  document.getElementById('editCaptionButton').style.display=editMode?'inline-block':'none';
+  slideIndex=Math.max(0,Math.min(photoIndex,slidePhotos.length-1));
+  slideshowReturnFocus=document.activeElement;
+  slideshow.classList.add('open');
+  slideshow.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  showSlide();
+  document.getElementById('slideClose').focus();
+}
+function changeSlide(direction){
+  if(!slidePhotos.length)return;
+  slideIndex=(slideIndex+direction+slidePhotos.length)%slidePhotos.length;
+  showSlide();
+}
+function closeSlideshow(){
+  slideshow.classList.remove('open');
+  slideshow.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  slideImage.removeAttribute('src');
+  closeCaptionEditor();
+  if(slideshowReturnFocus&&slideshowReturnFocus.isConnected)slideshowReturnFocus.focus();
+}
+document.getElementById('launchSlides').addEventListener('click',()=>openSlideshow(active,0));
+document.getElementById('slideNext').addEventListener('click',()=>changeSlide(1));
+document.getElementById('slidePrev').addEventListener('click',()=>changeSlide(-1));
+document.getElementById('slideClose').addEventListener('click',closeSlideshow);
+document.addEventListener('keydown',event=>{
+  if(!slideshow.classList.contains('open'))return;
+  if(event.target.closest('textarea,input'))return;
+  if(event.key==='ArrowRight'){event.preventDefault();changeSlide(1)}
+  else if(event.key==='ArrowLeft'){event.preventDefault();changeSlide(-1)}
+  else if(event.key==='Escape'){event.preventDefault();closeSlideshow()}
+});
+document.getElementById('photos').addEventListener('click',event=>{
+  const link=event.target.closest('a');
+  if(!link)return;
+  event.preventDefault();
+  const links=Array.from(document.querySelectorAll('#photos a'));
+  const photoIndex=links.indexOf(link);
+  if(photoIndex>=0)openSlideshow(active,photoIndex);
+});
+</script>
+</body>
+</html>
