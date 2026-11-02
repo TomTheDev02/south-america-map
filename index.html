@@ -240,6 +240,52 @@ box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7
 #timelineButton,#timelineFromIntro{border:1px solid #ddd4bf;background:#fffdf7;color:#1d3529;padding:12px 15px;border-radius:6px;box-shadow:0 2px 12px #0002}
 #timelineFromIntro{margin:10px 0 0;display:block;width:100%}
 @media(max-width:850px){.timeline-book{grid-template-columns:1fr}.timeline-book:before{display:none}.timeline-left{position:relative;min-height:0;padding:24px 20px}.timeline-mini-map{height:130px;width:130px;margin:0}.timeline-left h2{font-size:30px;margin:0 0 7px}.timeline-left p{font-size:13px;margin:0}.timeline-facts{margin-top:14px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap;padding:9px}.timeline-facts div{font-size:12px}.timeline-right{padding:20px 17px}.timeline-visit{grid-template-columns:110px 1fr 15px;gap:10px}.timeline-visit img,.timeline-placeholder{height:95px}.timeline-entry{grid-template-columns:57px 18px minmax(0,1fr);gap:7px}.timeline-list:before{left:64px}.timeline-date{font-size:11px}.timeline-name{font-size:17px}.timeline-desc{font-size:12px}.timeline-country{font-size:10px}.timeline-dot{width:12px;height:12px;margin-left:2px}}
+
+/* Illustrated artwork edition: real art assets, not just parchment-colored CSS. */
+#timelineView{background:#30281d;padding:0;scrollbar-color:#a98d61 #30281d}
+.timeline-book{max-width:1672px;width:100%;min-height:100vh;margin:auto;background-image:url('timeline_illustrated_book.webp');background-position:center top;background-size:100% 100%;background-repeat:no-repeat;box-shadow:0 0 65px #0008;outline:none;grid-template-columns:38% 62%}
+.timeline-book:before{left:38%;width:12px;background:linear-gradient(90deg,#4b301b40,transparent 55%,#4b301b1c)}
+.timeline-left{min-height:100vh;position:sticky;top:0;padding:95px 32px 65px;background:transparent;border:0;justify-content:flex-start}
+.timeline-left:after,.timeline-right:after{display:none}
+.timeline-engraving{width:min(72%,280px);height:34vh;max-height:320px;object-fit:contain;object-position:top;mix-blend-mode:multiply;opacity:.88;margin:0 auto 12px;filter:sepia(.25)}
+.timeline-left h2{font-size:clamp(29px,3vw,44px);margin:0 0 12px;letter-spacing:.045em;color:#302b1e;text-shadow:0 1px #f3e2be}
+.timeline-left p{font-size:16px;line-height:1.5}
+.timeline-ornament{font-size:20px}
+.timeline-facts{margin-top:auto;background:#e9d2a766;border:2px double #9d7951;box-shadow:inset 0 0 12px #876a3222;padding:12px 20px;width:min(100%,340px)}
+.timeline-right{padding:93px 6.2% 70px 5.5%;background:transparent}
+.timeline-top{border-bottom:1px solid #b39469;padding-bottom:10px;margin-bottom:16px}
+.timeline-top h3{font-style:italic;font-size:24px}
+.timeline-close{font:13px Georgia,serif;background:#e5d0a9;border:1px solid #8c6945;color:#44351f;cursor:pointer}
+.timeline-filter{justify-content:center;gap:9px;margin:0 0 18px}
+.timeline-filter button{font:14px Georgia,serif;background:#e8d4ad;border:1px solid #ab8758;padding:8px 15px;box-shadow:0 2px 3px #75532b25}
+.timeline-filter button.active{background:#304c32;color:#fff}
+.timeline-list:before{left:110px;background:#32563a}
+.timeline-entry{grid-template-columns:97px 23px minmax(0,1fr);gap:11px;padding:11px 0;min-height:132px}
+.timeline-date{background:#e6cda1;border:1px solid #b9935f;box-shadow:1px 2px 3px #76522e40;text-align:center;padding:12px 5px;transform:rotate(-1.4deg);font-size:13px;color:#453b2c}
+.timeline-dot{background:#e7d1a7;border:3px solid #31513b}
+.timeline-visit{grid-template-columns:minmax(130px,37%) 1fr 22px;gap:20px}
+.timeline-visit img{height:126px;transform:rotate(-1.1deg);border:6px solid #f4e4c3;box-shadow:2px 4px 9px #5b3b1c66;filter:saturate(.9) sepia(.08)}
+.timeline-name{font-size:clamp(19px,2.15vw,28px);font-weight:normal}
+.timeline-country{letter-spacing:.14em}
+.timeline-desc{font-size:14px}
+@media(max-width:850px){
+ #timelineView{background:#d5b68a}
+ .timeline-book{display:block;min-height:100vh;background-image:none;background:#e9d1a7;box-shadow:none}
+ .timeline-book:before{display:none}
+ .timeline-left{position:relative;min-height:0;padding:26px 20px 15px;background:linear-gradient(110deg,#ead4ae,#f0dfbb);border-bottom:5px double #b28e60}
+ .timeline-engraving{height:150px;width:145px;margin:0 auto 5px}
+ .timeline-left h2{font-size:30px}
+ .timeline-left p{font-size:13px}
+ .timeline-facts{margin-top:10px}
+ .timeline-right{padding:20px 18px 50px;background:linear-gradient(120deg,#efdfbd,#ead1a6)}
+ .timeline-entry{grid-template-columns:57px 17px minmax(0,1fr);gap:7px}
+ .timeline-list:before{left:64px}
+ .timeline-visit{grid-template-columns:100px 1fr 15px;gap:9px}
+ .timeline-visit img{height:90px;border-width:4px}
+ .timeline-date{font-size:10px;padding:8px 3px}
+ .timeline-name{font-size:17px}
+ .timeline-desc{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -277,8 +323,8 @@ box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7
 <section id="timelineView" role="dialog" aria-modal="true" aria-label="Journey timeline">
  <div class="timeline-book">
   <aside class="timeline-left">
-   <svg class="timeline-mini-map" viewBox="0 0 240 260" aria-hidden="true"><g fill="#8c997a" stroke="#536a55" stroke-width="2" opacity=".9"><path d="M64 15L100 7 130 22 151 18 181 37 209 58 198 88 214 105 189 134 177 167 160 192 144 220 128 251 116 228 119 197 99 170 92 143 71 117 61 91 40 68 51 42Z"/></g><path d="M87 52Q148 86 153 132T128 222" stroke="#f5e7c9" stroke-dasharray="4 5" stroke-width="3" fill="none"/><g stroke="#756a4f" fill="none"><circle cx="205" cy="206" r="25"/><path d="M205 173V239M172 206H238M183 184L227 228M227 184L183 228"/></g></svg>
-   <div class="timeline-ornament">✦</div>
+   <svg style="display:none" class="timeline-mini-map" viewBox="0 0 240 260" aria-hidden="true"><g fill="#8c997a" stroke="#536a55" stroke-width="2" opacity=".9"><path d="M64 15L100 7 130 22 151 18 181 37 209 58 198 88 214 105 189 134 177 167 160 192 144 220 128 251 116 228 119 197 99 170 92 143 71 117 61 91 40 68 51 42Z"/></g><path d="M87 52Q148 86 153 132T128 222" stroke="#f5e7c9" stroke-dasharray="4 5" stroke-width="3" fill="none"/><g stroke="#756a4f" fill="none"><circle cx="205" cy="206" r="25"/><path d="M205 173V239M172 206H238M183 184L227 228M227 184L183 228"/></g></svg>
+   <img class="timeline-engraving" src="timeline_south_america_engraving.webp" alt="Antique engraved South America map"><div class="timeline-ornament">✦</div>
    <h2>The Journey<br>Timeline</h2>
    <p>A chronological record of our travels through South America.</p>
    <div class="timeline-facts"><div>◷ <span>April – June 2026</span></div><div>◇ <span>4 countries</span></div><div>⌖ <span>18 destinations</span></div></div>
@@ -543,7 +589,8 @@ function renderTimeline(){
   const dot=document.createElement('div');dot.className='timeline-dot';
   const visit=document.createElement('button');visit.type='button';visit.className='timeline-visit';
   const photo=(photosByStop[i]||[])[0];
-  if(photo){const img=document.createElement('img');img.src=photoUrl(photo);img.alt=d.name+' photograph';img.loading='lazy';visit.appendChild(img)}
+  const illustrated=i<5?'timeline_art_'+String(i+1).padStart(2,'0')+'.webp':null;
+  if(illustrated||photo){const img=document.createElement('img');img.src=illustrated||photoUrl(photo);img.alt=d.name+' photograph';img.loading='lazy';visit.appendChild(img)}
   else{const placeholder=document.createElement('div');placeholder.className='timeline-placeholder';placeholder.textContent='Photograph coming soon';visit.appendChild(placeholder)}
   const copy=document.createElement('div');
   const title=document.createElement('div');title.className='timeline-name';title.textContent=d.name;
