@@ -203,6 +203,43 @@ box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7
 #cover .cover-portrait{box-shadow:-6px 0 0 #857354,-11px 0 0 #d5c5a1,5px 6px 0 #f7ecd4,11px 12px 0 #d3c09a,22px 27px 58px #392e24a6}
 #cover .cover-portrait .aged-photo{border:6px solid #e9d9b6;background-clip:padding-box}
 @media(max-width:700px){#cover .cover-atlas svg{width:150%;max-width:none;transform:translateX(-17%)}#cover .cover-portrait{box-shadow:-4px 0 0 #857354,-8px 0 0 #d5c5a1,5px 6px 0 #f7ecd4,11px 13px 30px #392e24a6}}
+
+/* THE JOURNEY TIMELINE — full-screen open-book atlas */
+#timelineView{position:fixed;inset:0;z-index:1200;display:none;overflow-y:auto;background:#ded0ad;color:#283a2e;padding:30px clamp(12px,3vw,52px);background-image:radial-gradient(ellipse at center,#f4e7c9 0%,#d0b88c 100%)}
+#timelineView.visible{display:block}
+.timeline-book{max-width:1450px;min-height:calc(100vh - 60px);margin:auto;display:grid;grid-template-columns:minmax(270px,34%) 1fr;position:relative;background:#f3e6c9;box-shadow:0 16px 55px #392b1c65,0 0 0 9px #ad946a;outline:1px solid #786345;outline-offset:5px}
+.timeline-book:before{content:"";position:absolute;left:34%;top:0;bottom:0;width:15px;z-index:3;pointer-events:none;background:linear-gradient(90deg,#6e553e55,transparent 50%,#6e553e33)}
+.timeline-left{position:sticky;top:0;align-self:start;min-height:calc(100vh - 60px);padding:34px clamp(18px,3vw,44px);border-right:1px solid #b7a17d;background:linear-gradient(100deg,#e7d4ac,#f2e3c3 70%,#dbc59c);display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden}
+.timeline-left:after,.timeline-right:after{content:"";position:absolute;inset:12px;border:1px solid #9b815652;pointer-events:none}
+.timeline-mini-map{width:min(100%,260px);height:250px;opacity:.75;margin:12px auto 6px}
+.timeline-left h2{font:normal clamp(30px,3.2vw,48px)/1.1 Georgia,serif;text-transform:uppercase;letter-spacing:.07em;margin:10px 0 18px}
+.timeline-left p{font:italic 16px/1.6 Georgia,serif;max-width:290px}
+.timeline-ornament{font:30px Georgia,serif;color:#977b52}
+.timeline-facts{margin-top:auto;width:100%;padding:17px;border:1px solid #a48b65;text-align:left;font:15px/1.9 Georgia,serif;background:#f5e8cc88}
+.timeline-facts div{display:flex;gap:12px}
+.timeline-right{position:relative;padding:26px clamp(18px,3.5vw,55px) 55px;background:repeating-linear-gradient(0deg,#9a805308 0 1px,transparent 1px 7px),#f5e9d0}
+.timeline-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:17px;border-bottom:1px solid #b8a07b;margin-bottom:18px}
+.timeline-top h3{font:normal 21px Georgia,serif;margin:0}
+.timeline-close{background:#2d4c39;color:#fff;border:0;padding:10px 16px;position:relative;z-index:5}
+.timeline-filter{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:17px}
+.timeline-filter button{border:1px solid #b6a17c;background:transparent;color:#4e4938;padding:7px 11px;font:12px Georgia,serif;cursor:pointer}
+.timeline-filter button.active{background:#30553d;color:#fff;border-color:#30553d}
+.timeline-list{position:relative;padding-left:0}
+.timeline-list:before{content:"";position:absolute;left:113px;top:12px;bottom:30px;width:2px;background:#4d704e}
+.timeline-entry{position:relative;display:grid;grid-template-columns:100px 22px minmax(0,1fr);gap:13px;align-items:center;border-bottom:1px solid #bfa98477;padding:17px 0;min-height:140px}
+.timeline-date{text-align:right;font:13px Georgia,serif;color:#725e42}
+.timeline-dot{width:14px;height:14px;border:3px solid #31513b;border-radius:50%;background:#f2e3c4;z-index:1;margin-left:5px}
+.timeline-visit{display:grid;grid-template-columns:minmax(120px,38%) 1fr 20px;gap:20px;align-items:center;width:100%;border:0;background:transparent;text-align:left;padding:0;color:inherit;cursor:pointer}
+.timeline-visit:hover .timeline-name{text-decoration:underline;text-underline-offset:4px}
+.timeline-visit img{width:100%;height:132px;object-fit:cover;border:6px solid #f9f1df;box-shadow:0 3px 10px #614e3470;transform:rotate(-1deg);background:#e4d6b8}
+.timeline-placeholder{height:132px;display:flex;align-items:center;justify-content:center;border:6px solid #f9f1df;background:#e0d2b2;color:#8b7755;font:italic 15px Georgia,serif}
+.timeline-name{font:normal clamp(18px,2.3vw,28px) Georgia,serif;text-transform:uppercase;letter-spacing:.035em;color:#2d4934}
+.timeline-country{font:11px Georgia,serif;letter-spacing:.18em;margin:6px 0 10px}
+.timeline-desc{font:14px/1.55 Georgia,serif;max-width:420px}
+.timeline-arrow{font:25px Georgia,serif}
+#timelineButton,#timelineFromIntro{border:1px solid #ddd4bf;background:#fffdf7;color:#1d3529;padding:12px 15px;border-radius:6px;box-shadow:0 2px 12px #0002}
+#timelineFromIntro{margin:10px 0 0;display:block;width:100%}
+@media(max-width:850px){.timeline-book{grid-template-columns:1fr}.timeline-book:before{display:none}.timeline-left{position:relative;min-height:0;padding:24px 20px}.timeline-mini-map{height:130px;width:130px;margin:0}.timeline-left h2{font-size:30px;margin:0 0 7px}.timeline-left p{font-size:13px;margin:0}.timeline-facts{margin-top:14px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap;padding:9px}.timeline-facts div{font-size:12px}.timeline-right{padding:20px 17px}.timeline-visit{grid-template-columns:110px 1fr 15px;gap:10px}.timeline-visit img,.timeline-placeholder{height:95px}.timeline-entry{grid-template-columns:57px 18px minmax(0,1fr);gap:7px}.timeline-list:before{left:64px}.timeline-date{font-size:11px}.timeline-name{font-size:17px}.timeline-desc{font-size:12px}.timeline-country{font-size:10px}.timeline-dot{width:12px;height:12px;margin-left:2px}}
 </style>
 </head>
 <body>
@@ -227,14 +264,32 @@ box-shadow:0 22px 65px #0008,inset 0 0 38px #9e73462e;clip-path:polygon(0 0,98.7
 <div class="eyebrow">The adventure begins · 2026</div>
 <h2>South America</h2>
 <p>Four friends. Four countries. One unforgettable trip.<br>Explore the places we visited, one chapter at a time.</p>
-<button id="firstStop">Explore the first stop →</button>
+<button id="firstStop">Explore the first stop →</button><button id="timelineFromIntro" type="button">Browse the journey timeline →</button>
 </div></section>
 <section id="countryReveal" role="dialog" aria-modal="true" aria-label="Country introduction" aria-hidden="true"><div class="country-page"><button id="skipCountry" type="button">Skip introduction ×</button><div class="country-art"><span class="poster-footer">SÃO PAULO · RIO · ILHA GRANDE · PORTO ALEGRE</span><svg id="countryShape" role="img" aria-label="Country silhouette filled with national flag" viewBox="0 0 300 360" preserveAspectRatio="xMidYMid meet"></svg></div><div class="country-copy"><div class="country-eyebrow" id="countryChapter">CHAPTER I · SOUTH AMERICA</div><h2 id="countryName">Brazil</h2><p id="countrySubtitle"></p><div id="countryStops"></div><div class="country-stamp"><span id="stampName">BRASIL</span><small>2026 · ENTRY</small><small>✦ ✦ ✦</small></div><button id="enterCountry" type="button">ENTER BRAZIL →</button></div></div></section>
-<div id="topbar"><button id="home">← Cover</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
+<div id="topbar"><button id="home">← Cover</button><button id="timelineButton" type="button">Timeline</button><select id="destSelect" aria-label="Jump to a destination"></select></div>
 <div id="travelStatus" role="status" aria-live="polite"></div>
 <article id="chapter"><button id="close" aria-label="Close chapter">×</button><div class="country" id="country"></div><h2 id="placeName"></h2><p id="story"></p><div id="brazilRoute" aria-label="Brazil journey stops"><div class="route-heading">BRAZIL · OUR ROUTE</div><div class="route-items"></div></div><button id="launchSlides" type="button" style="display:none">▶ View full-screen photo journal</button><h3 id="galleryHeading" class="gallery-heading" style="display:none">Postcards from the road</h3><div id="photos"></div><p id="photoNote"></p></article>
 <div id="bottom"><button id="prev">← Previous</button><div id="progress"><span>OUR JOURNEY</span><strong id="progressLabel">01 / 18</strong></div><button id="next">Next stop →</button></div>
 </main>
+
+
+<section id="timelineView" role="dialog" aria-modal="true" aria-label="Journey timeline">
+ <div class="timeline-book">
+  <aside class="timeline-left">
+   <svg class="timeline-mini-map" viewBox="0 0 240 260" aria-hidden="true"><g fill="#8c997a" stroke="#536a55" stroke-width="2" opacity=".9"><path d="M64 15L100 7 130 22 151 18 181 37 209 58 198 88 214 105 189 134 177 167 160 192 144 220 128 251 116 228 119 197 99 170 92 143 71 117 61 91 40 68 51 42Z"/></g><path d="M87 52Q148 86 153 132T128 222" stroke="#f5e7c9" stroke-dasharray="4 5" stroke-width="3" fill="none"/><g stroke="#756a4f" fill="none"><circle cx="205" cy="206" r="25"/><path d="M205 173V239M172 206H238M183 184L227 228M227 184L183 228"/></g></svg>
+   <div class="timeline-ornament">✦</div>
+   <h2>The Journey<br>Timeline</h2>
+   <p>A chronological record of our travels through South America.</p>
+   <div class="timeline-facts"><div>◷ <span>April – June 2026</span></div><div>◇ <span>4 countries</span></div><div>⌖ <span>18 destinations</span></div></div>
+  </aside>
+  <div class="timeline-right">
+   <div class="timeline-top"><h3>Our South America Trip</h3><button id="timelineClose" class="timeline-close" type="button">← Return to map</button></div>
+   <nav class="timeline-filter" id="timelineFilters" aria-label="Filter destinations by country"></nav>
+   <div class="timeline-list" id="timelineList"></div>
+  </div>
+ </div>
+</section>
 
 <div id="slideshow" role="dialog" aria-modal="true" aria-label="Destination photo slideshow" aria-hidden="true">
 <button id="slideClose" aria-label="Close slideshow">×</button>
@@ -463,6 +518,50 @@ document.getElementById('next').onclick=()=>moveTo(active+1);
 document.getElementById('prev').onclick=()=>moveTo(active-1);
 select.onchange=()=>{if(select.value!=='')jumpTo(Number(select.value))};
 setControls(false);
+
+
+// A separate atlas-style timeline. Uses the site's existing destination and photo data.
+const timelineView=document.getElementById('timelineView');
+const timelineList=document.getElementById('timelineList');
+const timelineFilters=document.getElementById('timelineFilters');
+// Add confirmed visit dates here when available; no dates are fabricated.
+const timelineDates={};
+let timelineFilter='All';
+function renderTimeline(){
+ timelineFilters.replaceChildren();
+ ['All','Brazil','Argentina','Chile','Peru'].forEach(country=>{
+  const b=document.createElement('button');b.type='button';b.textContent=country==='All'?'Entire journey':country;
+  b.classList.toggle('active',timelineFilter===country);
+  b.onclick=()=>{timelineFilter=country;renderTimeline()};
+  timelineFilters.appendChild(b);
+ });
+ timelineList.replaceChildren();
+ destinations.forEach((d,i)=>{
+  if(timelineFilter!=='All'&&journeyCountry(i)!==timelineFilter)return;
+  const row=document.createElement('div');row.className='timeline-entry';
+  const date=document.createElement('div');date.className='timeline-date';date.textContent=timelineDates[i]||`STOP ${String(i+1).padStart(2,'0')}`;
+  const dot=document.createElement('div');dot.className='timeline-dot';
+  const visit=document.createElement('button');visit.type='button';visit.className='timeline-visit';
+  const photo=(photosByStop[i]||[])[0];
+  if(photo){const img=document.createElement('img');img.src=photoUrl(photo);img.alt=d.name+' photograph';img.loading='lazy';visit.appendChild(img)}
+  else{const placeholder=document.createElement('div');placeholder.className='timeline-placeholder';placeholder.textContent='Photograph coming soon';visit.appendChild(placeholder)}
+  const copy=document.createElement('div');
+  const title=document.createElement('div');title.className='timeline-name';title.textContent=d.name;
+  const country=document.createElement('div');country.className='timeline-country';country.textContent=d.country.toUpperCase();
+  const desc=document.createElement('div');desc.className='timeline-desc';desc.textContent=d.story;
+  copy.append(title,country,desc);
+  const arrow=document.createElement('span');arrow.className='timeline-arrow';arrow.textContent='→';
+  visit.append(copy,arrow);
+  visit.onclick=()=>{closeTimeline();overview.classList.remove('visible');document.getElementById('topbar').style.display='flex';document.getElementById('bottom').style.display='flex';jumpTo(i)};
+  row.append(date,dot,visit);timelineList.appendChild(row);
+ });
+}
+function openTimeline(){renderTimeline();timelineView.classList.add('visible');timelineView.scrollTop=0;document.getElementById('timelineClose').focus()}
+function closeTimeline(){timelineView.classList.remove('visible')}
+document.getElementById('timelineButton').onclick=openTimeline;
+document.getElementById('timelineFromIntro').onclick=openTimeline;
+document.getElementById('timelineClose').onclick=closeTimeline;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&timelineView.classList.contains('visible'))closeTimeline()});
 
 // Full-screen, in-page destination photo slideshow.
 let slidePhotos=[],slideIndex=0,slidePlace='',slideStopIndex=0;
